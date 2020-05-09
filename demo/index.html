@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div id="demo"></div>
+
+  <script type="module">
+    import { html, render } from 'lit-html';
+    import '../colouring-book.js';
+
+    const img = ['images/L0_P_U1_IW2.pdf-1.png','images/L0_P_U1_IW2.pdf-2.png'];
+    const paletteColours=[
+            'rgba(87, 87, 87,0.8)',
+            'rgba(220, 35, 35,0.8)',
+            'rgba(42, 75, 215,0.8)',
+            'rgba(29, 105, 20,0.8)',
+            'rgba(129, 74, 25,0.8)',
+            'rgba(129, 38, 192,0.8)',
+            'rgba(160, 160, 160,0.8)',
+            'rgba(129, 197, 122,0.8)',
+            'rgba(157, 175, 255,0.8)',
+            'rgba(41, 208, 208,0.8)',
+            'rgba(255, 146, 51,0.8)',
+            'rgba(255, 238, 51,0.8)',
+            'rgba(233, 222, 187,0.8)',
+            'rgba(255, 205, 243,0.8)',
+            'white'];
+    render(
+      html`
+        <colouring-book .images=${img} .colourPalette=${paletteColours} .maxBrushSize="64"> 
+          some more light-dom
+        </colouring-book>
+      `,
+      document.querySelector('#demo')
+    );
+  </script>
+</body>
+</html>
