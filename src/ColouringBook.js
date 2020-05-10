@@ -29,7 +29,14 @@ export class ColouringBook extends LitElement {
       word-wrap: normal;
       direction: ltr;
     }
-    .wrapper { width:100%; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}
+    .wrapper { 
+        width:100%;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;}
     
     /*default theme*/
     .imageNav img {
@@ -412,10 +419,8 @@ input[type=range].sizerTool:focus::-ms-fill-upper {
         this.clearActivePath();
         let ctx;
         let path = this.paths[this.paths.length - 1];
-        if (saveToCanvas == true || path[0].c == (this.paletteColours[this.paletteColours.length - 1])) 
-            { ctx = this.ctx; }
-        else 
-            { ctx = this.activeCtx; }
+        if (saveToCanvas == true || path[0].c == (this.paletteColours[this.paletteColours.length - 1])) { ctx = this.ctx; }
+        else { ctx = this.activeCtx; }
 
         if (!path[0].c) { path[0].c = 0; }
         ctx.strokeStyle = path[0].c;
@@ -520,7 +525,7 @@ input[type=range].sizerTool:focus::-ms-fill-upper {
 		<div class="imageNav">
             ${
             this.images.map(image =>
-                html`<img src='${image}' class="${classMap({selected: this.selectedImage == image})}" @click=${() => this.selectImage(image)}>
+                html`<img src='${image}' class="${classMap({ selected: this.selectedImage == image })}" @click=${() => this.selectImage(image)}>
                 `)
             }
         </div>
@@ -535,8 +540,8 @@ input[type=range].sizerTool:focus::-ms-fill-upper {
 			</div>
 			<div class="palette">
             <div id="picker"></div>
-                ${this.paletteColours.map((col,index) => (html`
-                    <div class='paletteColour ${classMap({eraser: index==this.paletteColours.length-1})}' style=${styleMap({ backgroundColor: col })} data-colour='${col}'
+                ${this.paletteColours.map((col, index) => (html`
+                    <div class='paletteColour ${classMap({ eraser: index == this.paletteColours.length - 1 })}' style=${styleMap({ backgroundColor: col })} data-colour='${col}'
                         @click=${(e) => this.selectColour(e)}>
                         <i class="material-icons" 
                         ></i>
