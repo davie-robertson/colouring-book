@@ -7,6 +7,39 @@ This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) reco
 npm i colouring-book
 ```
 
+## Properties
+```html
+images - an array of URLs for each worksheet
+colourPalette - an array of colours that can be used in the component
+
+    const img = ['images/L0_P_U1_IW2.pdf-1.png','images/L0_P_U1_IW2.pdf-2.png'];
+    const cols=[
+            'rgba(87, 87, 87,0.8)',
+            'rgba(220, 35, 35,0.8)',
+            'rgba(42, 75, 215,0.8)',
+            'rgba(29, 105, 20,0.8)',
+            'rgba(129, 74, 25,0.8)',
+            'rgba(129, 38, 192,0.8)',
+            'rgba(160, 160, 160,0.8)',
+            'rgba(129, 197, 122,0.8)',
+            'rgba(157, 175, 255,0.8)',
+            'rgba(41, 208, 208,0.8)',
+            'rgba(255, 146, 51,0.8)',
+            'rgba(255, 238, 51,0.8)',
+            'rgba(233, 222, 187,0.8)',
+            'rgba(255, 205, 243,0.8)',
+            'white'];
+    render(
+      html`
+        <colouring-book .images=${img} .colourPalette=${cols} .maxBrushSize="64"> 
+        </colouring-book>
+      `,
+      document.querySelector('#demo')
+    );
+
+```
+
+
 ## Usage
 ```html
 <script type="module">
