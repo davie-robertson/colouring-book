@@ -1,8 +1,8 @@
-import { html, css, svg, LitElement } from 'lit-element';
+import { html, css, LitElement } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import '@material/mwc-icon-button';
-import '@material/mwc-icon-button-toggle'
+import '@material/mwc-icon-button-toggle';
 import {
 	printIcon,
 	clearIcon,
@@ -11,13 +11,9 @@ import {
 	framed_mono_eraser,
 	framed_colour_eraser,
 	framed_colour_pen1,
-	framed_mono_pen1,
 	framed_colour_pen2,
-	framed_mono_pen2,
 	framed_colour_pen3,
-	framed_mono_pen3,
 	framed_colour_pen4,
-	framed_mono_pen4,
 } from './SvgIcons'
 
 
@@ -92,8 +88,6 @@ export class ColouringBook extends LitElement {
         transform: scale(1.2);
     }
 
-    .paletteColour.eraser { border-color: red; background-image: linear-gradient(135deg,white 43%, red 45%, red 55%, white 57%, white)}
-
     .canvasWrapper {
         display:inline-block;
         position:relative;
@@ -134,7 +128,7 @@ label {
 	border: 1px solid rgba(#FAFAFA,.15);
 
 	cursor: pointer;
-	opacity: .5;
+	opacity: .25;
 	transition: all .5s ease-in-out;
 
 }
@@ -196,7 +190,6 @@ input[type="radio"]:checked ~ label {
 		this.brushSize = 16;
 		this.paths = [];
 		this.selectedImage = ""
-		this.colour = 'Yellow'
 	}
 
 	firstUpdated() {
@@ -207,6 +200,8 @@ input[type="radio"]:checked ~ label {
 		this.selectImage(this.images[0]);
 		this._imageChanged()
 		this.setCursor();
+		this.colour=this.paletteColours[0]
+		this.setCursor()
 	}
 
 	selectImage(sourceImg) {
