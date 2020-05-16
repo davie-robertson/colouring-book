@@ -1,8 +1,9 @@
-import { html, css, LitElement } from 'lit-element';
+import { html, css,svg, LitElement } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import iro from '@jaames/iro';
-
+import '@material/mwc-icon-button';
+import  {eraseIcon, printIcon, clearIcon, saveIcon, sketchIcon, outlinedPencilIcon, brushIcon, pencilIcon, penIcon, bigBrushIcon, } from './SvgIcons'
 
 
 export class ColouringBook extends LitElement {
@@ -239,9 +240,22 @@ input[type=range].sizerTool:focus::-ms-fill-upper {
         this.wrapper = this.shadowRoot.getElementById('wrapper');
         this.canvas = this.shadowRoot.getElementById('canvas');
         this.activeCanvas = this.shadowRoot.getElementById('activeCanvas');
-        this.selectImage(this.images[0])
+        this.selectImage(this.images[0]);
         this._imageChanged()
-        this.setCursor()
+        this.setCursor();
+        var colorPicker = new iro.ColorPicker(
+          this.shadowRoot.getElementById('picker'),
+          {
+            // Set the size of the color picker
+            width: 180,
+            layout: [
+              {
+                component: iro.ui.Wheel,
+                options: {},
+              },
+            ],
+          }
+        );
     }
 
     selectImage(sourceImg) {
@@ -515,7 +529,7 @@ input[type=range].sizerTool:focus::-ms-fill-upper {
 
     selectColour(e) {
         this.colour = e.currentTarget.dataset.colour
-        var colorPicker = new iro.ColorPicker(this.shadowRoot.getElementById('picker'));
+        
         this.setCursor()
     }
 
@@ -546,23 +560,30 @@ input[type=range].sizerTool:focus::-ms-fill-upper {
                         <i class="material-icons" 
                         ></i>
                     </div>
-                    `))}
+                  `
+                )}
+              </div>
             </div>
-		</div>
-		<div class="canvasWrapper">
-        <img id='canvasImage' class='canvasBackgroundImage' src=${this.selectedImage} @load=${this._imageChanged}>
-            <canvas id='canvas' class='canvas'></canvas>
-            <canvas id='activeCanvas' class='activeCanvas'
-            @mousedown=${(e) => this.mouseDown(e)}
-            @mouseup=${(e) => this.mouseUp(e)} 
-            @mousemove=${(e) => this.mouseMove(e)}
-            @touchstart=${(e) => this.touchStart(e)}
-            @touchend=${(e) => this.touchEnd(e)}
-            @touchmove=${(e) => this.touchMove(e)}
-            
-            ></canvas>
-        </div>
-	</div>
-    `;
+            <div class="canvasWrapper">
+              <img
+                id="canvasImage"
+                class="canvasBackgroundImage"
+                src=${this.selectedImage}
+                @load=${this._imageChanged}
+              />
+              <canvas id="canvas" class="canvas"></canvas>
+              <canvas
+                id="activeCanvas"
+                class="activeCanvas"
+                @mousedown=${e => this.mouseDown(e)}
+                @mouseup=${e => this.mouseUp(e)}
+                @mousemove=${e => this.mouseMove(e)}
+                @touchstart=${e => this.touchStart(e)}
+                @touchend=${e => this.touchEnd(e)}
+                @touchmove=${e => this.touchMove(e)}
+              ></canvas>
+            </div>
+          </div>
+        `;
     }
 }
