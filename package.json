@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@material/mwc-icon-button": "^0.15.0",
+    "@material/mwc-icon-button-toggle": "^0.15.0",
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.2"
   },

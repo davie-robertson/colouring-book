@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   height="48.669998"
+   width="48.669998"
+   sodipodi:docname="framed_colour_pen1.svg"
+   version="1.1"
+   viewBox="0 0 48.67 48.669997"
+   data-name="Layer 1"
+   id="Layer_1">
+  <metadata
+     id="metadata148">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:current-layer="Layer_1"
+     inkscape:window-maximized="0"
+     inkscape:window-y="208"
+     inkscape:window-x="2944"
+     inkscape:cy="24.335001"
+     inkscape:cx="24.259998"
+     inkscape:zoom="7.7680691"
+     inkscape:pagecheckerboard="true"
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     showgrid="false"
+     id="namedview146"
+     inkscape:window-height="663"
+     inkscape:window-width="707"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <defs
+     id="defs121">
+    <style
+       id="style116">.cls-1,.cls-10{fill:none;}.cls-2{fill:#fff;}.cls-3{clip-path:url(#clip-path);}.cls-4{fill:#fdbf74;}.cls-5{fill:#ebaa6d;}.cls-6{fill:#8cc63f;}.cls-7{fill:#009245;}.cls-8{fill:#39b54a;}.cls-9{fill:#006837;}.cls-10{stroke:#b3b3b3;stroke-miterlimit:10;stroke-width:2px;}</style>
+    <clipPath
+       id="clip-path">
+      <rect
+         id="rect118"
+         rx="9.5200005"
+         height="46.669998"
+         width="46.669998"
+         y="23.67"
+         x="44.259998"
+         class="cls-1" />
+    </clipPath>
+  </defs>
+  <rect
+     id="rect123"
+     rx="9.5200005"
+     height="46.669998"
+     width="46.669998"
+     y="1"
+     x="0.85000229"
+     class="cls-2" />
+  <g
+     transform="translate(-43.259998,-22.67)"
+     id="g141"
+     clip-path="url(#clip-path)"
+     class="cls-3">
+    <polygon
+       id="polygon125"
+       points="71.08,59.68 76.18,50.59 69.48,35.49 65.24,35.49 58.54,50.59 63.62,59.68 "
+       class="cls-4" />
+    <polygon
+       id="polygon127"
+       points="68.18,35.49 73.38,55.58 76.18,50.59 69.48,35.49 "
+       class="cls-5" />
+    <path
+       id="path129"
+       d="m 58.54,50.59 v 4.06 0 40.47 H 63 V 54.65 a 4.25,4.25 0 0 0 -4.46,-4.06 z"
+       class="cls-6" />
+    <path
+       id="path131"
+       d="m 71.77,54.65 v 0 40.47 h 4.41 V 50.59 a 4.25,4.25 0 0 0 -4.41,4.06 z"
+       class="cls-7" />
+    <path
+       id="path133"
+       d="m 71.77,54.65 a 4.43,4.43 0 0 0 -8.82,0 v 40.47 h 8.82 z"
+       class="cls-8" />
+    <path
+       id="path135"
+       d="m 66.34,32.06 -2.26,6.06 h 6.56 l -2.26,-6.06 a 1.08,1.08 0 0 0 -2.04,0 z"
+       class="cls-7" />
+    <path
+       id="path137"
+       d="m 68.86,38.12 h 1.78 l -2.26,-6.06 a 1,1 0 0 0 -1.27,-0.69 z"
+       class="cls-9" />
+    <path
+       id="path139"
+       d="m 69.76,81.2 c 0,1.64 -0.61,3 -1.36,3 v 0 c -0.75,0 -1.36,-1.34 -1.36,-3 v -20 c 0,-1.65 0.61,-3 1.36,-3 v 0 c 0.75,0 1.36,1.34 1.36,3 z"
+       class="cls-6" />
+  </g>
+  <rect
+     id="rect143"
+     rx="9.5200005"
+     height="46.669998"
+     width="46.669998"
+     y="1"
+     x="1"
+     class="cls-10" />
+</svg>

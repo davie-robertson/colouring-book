@@ -11,6 +11,8 @@ npm i colouring-book
 ```html
 images - an array of URLs for each worksheet
 colourPalette - an array of colours that can be used in the component
+noPrint - Boolean to disable print
+noSave - Boolean to disable save/download to local machine
 
     const img = ['images/L0_P_U1_IW2.pdf-1.png','images/L0_P_U1_IW2.pdf-2.png'];
     const cols=[
@@ -31,10 +33,8 @@ colourPalette - an array of colours that can be used in the component
             'white'];
     render(
       html`
-        <colouring-book .images=${img} .colourPalette=${cols} .maxBrushSize="64"> 
+        <colouring-book noPrint .images=${img} .colourPalette=${cols}> 
         </colouring-book>
-      `,
-      document.querySelector('#demo')
     );
 
 ```

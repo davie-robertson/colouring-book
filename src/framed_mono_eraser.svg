@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   height="48.669998"
+   width="48.669998"
+   sodipodi:docname="framed_mono_eraser.svg"
+   version="1.1"
+   viewBox="0 0 48.670001 48.669998"
+   data-name="Layer 1"
+   id="Layer_1">
+  <metadata
+     id="metadata3101">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:current-layer="Layer_1"
+     inkscape:window-maximized="0"
+     inkscape:window-y="0"
+     inkscape:window-x="0"
+     inkscape:cy="24.335001"
+     inkscape:cx="24.259998"
+     inkscape:zoom="7.7680691"
+     inkscape:pagecheckerboard="true"
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     units="px"
+     showgrid="false"
+     id="namedview3099"
+     inkscape:window-height="480"
+     inkscape:window-width="707"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <defs
+     id="defs3080">
+    <style
+       id="style3075">.cls-1,.cls-9{fill:none;}.cls-2,.cls-8{fill:#fff;}.cls-3{clip-path:url(#clip-path);}.cls-4{fill:#b3b3b3;}.cls-5{fill:#ccc;}.cls-6{fill:#999;}.cls-7{fill:gray;}.cls-8{opacity:0.28;}.cls-9{stroke:#b3b3b3;stroke-miterlimit:10;stroke-width:2px;}</style>
+    <clipPath
+       id="clip-path">
+      <rect
+         id="rect3077"
+         rx="9.5200005"
+         height="46.669998"
+         width="46.669998"
+         y="23.67"
+         x="44.259998"
+         class="cls-1" />
+    </clipPath>
+  </defs>
+  <rect
+     id="rect3082"
+     rx="9.5200005"
+     height="46.669998"
+     width="46.669998"
+     y="1"
+     x="0.85000229"
+     class="cls-2" />
+  <g
+     transform="translate(-43.259998,-22.67)"
+     id="g3094"
+     clip-path="url(#clip-path)"
+     class="cls-3">
+    <rect
+       id="rect3084"
+       rx="3.1400001"
+       height="40.470001"
+       width="24.120001"
+       y="32.880001"
+       x="55.57"
+       class="cls-4" />
+    <path
+       id="path3086"
+       d="M 72.58,35.74 H 55.65 a 3.94,3.94 0 0 0 -0.08,0.77 v 33.2 a 3.63,3.63 0 0 0 3.63,3.63 h 16.92 a 4,4 0 0 0 0.09,-0.77 V 39.38 a 3.63,3.63 0 0 0 -3.63,-3.64 z"
+       class="cls-5" />
+    <path
+       id="path3088"
+       d="m 79.88,64 -3.62,1.31 H 55.77 A 1.18,1.18 0 0 1 54.45,64 V 42.49 c 0,-0.51 0.1,-1.38 1.32,-1.31 H 76.16 L 79.69,40 c 0.71,-0.21 1.12,0.3 1.07,1.22 l 0.1,21.31 A 1.42,1.42 0 0 1 79.88,64 Z"
+       class="cls-6" />
+    <path
+       id="path3090"
+       d="m 79.69,40 -3.53,1.19 h -0.08 v 24.07 h 0.18 L 79.88,64 a 1.42,1.42 0 0 0 1,-1.43 L 80.78,41.26 C 80.81,40.29 80.4,39.78 79.69,40 Z"
+       class="cls-7" />
+    <rect
+       id="rect3092"
+       rx="1.85"
+       height="19.940001"
+       width="5.3800001"
+       y="43.32"
+       x="59.27"
+       class="cls-8" />
+  </g>
+  <rect
+     id="rect3096"
+     rx="9.5200005"
+     height="46.669998"
+     width="46.669998"
+     y="1"
+     x="1"
+     class="cls-9" />
+</svg>
