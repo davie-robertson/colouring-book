@@ -1,7 +1,6 @@
 import { html, css,svg, LitElement } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import iro from '@jaames/iro';
 import '@material/mwc-icon-button';
 import  {eraseIcon, printIcon, clearIcon, saveIcon, sketchIcon, outlinedPencilIcon, brushIcon, pencilIcon, penIcon, bigBrushIcon, } from './SvgIcons'
 
@@ -243,19 +242,6 @@ input[type=range].sizerTool:focus::-ms-fill-upper {
         this.selectImage(this.images[0]);
         this._imageChanged()
         this.setCursor();
-        var colorPicker = new iro.ColorPicker(
-          this.shadowRoot.getElementById('picker'),
-          {
-            // Set the size of the color picker
-            width: 180,
-            layout: [
-              {
-                component: iro.ui.Wheel,
-                options: {},
-              },
-            ],
-          }
-        );
     }
 
     selectImage(sourceImg) {
@@ -553,15 +539,16 @@ input[type=range].sizerTool:focus::-ms-fill-upper {
 				<button class="saveButton  button"><i class="material-icons" @click=${this.save}></i></button>
 			</div>
 			<div class="palette">
-            <div id="picker"></div>
                 ${this.paletteColours.map((col, index) => (html`
-                    <div class='paletteColour ${classMap({ eraser: index == this.paletteColours.length - 1 })}' style=${styleMap({ backgroundColor: col })} data-colour='${col}'
-                        @click=${(e) => this.selectColour(e)}>
-                        <i class="material-icons" 
+                    <div class='paletteColour ${classMap({ eraser: index == this.paletteColours.length - 1 })}'
+                    style=${styleMap({ backgroundColor: col })} data-colour='${col}'
+                    @click=${(e) => this.selectColour(e)}>
+                    
+                    <i class="material-icons" 
                         ></i>
                     </div>
                   `
-                )}
+                ))}
               </div>
             </div>
             <div class="canvasWrapper">
