@@ -14,7 +14,7 @@ import {
 	framed_colour_pen2,
 	framed_colour_pen3,
 	framed_colour_pen4,
-} from './SvgIcons'
+} from './SvgIcons.js'
 
 
 export class ColouringBook extends LitElement {
@@ -328,7 +328,7 @@ input[type="radio"]:checked ~ label {
 	mouseDown(e) {
 		let pos = this.getCursorPosition(e);
 		this.dragging = true;
-		this.erase ? pos.c = 'erase' : pos.c = this.colour;
+		this._erase ? pos.c = 'erase' : pos.c = this.colour;
 		pos.s = this.brushSize;
 		this.paths.push([pos]);
 		this.setCursor();
@@ -395,7 +395,6 @@ input[type="radio"]:checked ~ label {
 		ctx.clearRect(0, 0, width, height);
 		this.paths.map((path) => {
 			if (!path[0].c) { path[0].c = 0; }
-
 			ctx.lineCap = 'round';
 			ctx.lineJoin = 'round';
 			ctx.lineWidth = path[0].s * (this.img.naturalWidth / this.img.width);
@@ -418,8 +417,6 @@ input[type="radio"]:checked ~ label {
 
 	updateSize(size = 8) {
 		this.brushSize = size
-
-
 		this.setCursor();
 	}
 
@@ -433,7 +430,7 @@ input[type="radio"]:checked ~ label {
 		let context = canvas.getContext('2d');
 		context.beginPath();
 		context.arc(16, 16, size / 2, 0, 2 * Math.PI, false);
-		context.fillStyle = this.erase ? 'white' : this.colour
+		context.fillStyle = this._erase ? 'white' : this.colour
 		context.fill();
 		context.strokeStyle = 'black'
 		context.strokeWidth = 2;
@@ -469,26 +466,22 @@ input[type="radio"]:checked ~ label {
 
 	selectColour(e) {
 		this.colour = e.currentTarget.dataset.colour
-		console.log(this.erase)
-		if (this.erase) {
+		if (this._erase) {
 			const eraseButton = this.shadowRoot.getElementById('eraser')
 			eraseButton.on = false
-			this.erase = false
+			this._erase = false
 		}
 		this.setCursor()
-
 	}
 
 	toggleErase(e) {
-
-		if (this.erase) {
+		if (this._erase) {
 			this.colour = this._oldCol
 		} else {
 			this._oldCol = this.colour
 			this.colour = 'none'
 		}
-
-		this.erase = e.detail.isOn;
+		this._erase = e.detail.isOn;
 		this.setCursor()
 	}
 
@@ -509,32 +502,30 @@ input[type="radio"]:checked ~ label {
 				<input type="radio" name="match" id="match_1" value="2" >
 				<label for="match_1" @click=${() => this.updateSize(2)}>
 					${framed_colour_pen1}					
-				</label> </p>
-				<p class="form__answer"> 
+				</label></p>
+		<p class="form__answer"> 
 				<input type="radio" name="match" id="match_2" value="8" checked> 
 				<label for="match_2" @click=${() => this.updateSize(8)}>
 					${framed_colour_pen2}					
-				</label> 
-		</p>		<p class="form__answer"> 
+				</label></p>		
+		<p class="form__answer"> 
 				<input type="radio" name="match" id="match_3" value="16" > 
 				<label for="match_3" @click=${() => this.updateSize(16)}>
 					${framed_colour_pen3}					
-				</label> 
-		</p>		<p class="form__answer"> 
+				</label></p>
+		<p class="form__answer"> 
 				<input type="radio" name="match" id="match_4" value="32" > 
 				<label for="match_4" @click=${() => this.updateSize(32)}>
 					${framed_colour_pen4}					
-				</label> 
-		</p>
+				</label></p>
 
-		
 		<mwc-icon-button-toggle id='eraser' @MDCIconButtonToggle:change=${(e) => this.toggleErase(e)}>
 		${framed_colour_eraser}
 		${framed_mono_eraser}
 		</mwc-icon-button-toggle>
 
 
-			<div class="spacer"></div>
+		<div class="spacer"></div>
         <mwc-icon-button @click=${this.undo}>${undoIcon}</mwc-icon-button>
         <mwc-icon-button @click=${this.clear}>${clearIcon}</mwc-icon-button>
 		

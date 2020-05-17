@@ -1,8 +1,8 @@
 {
   "name": "colouring-book",
-  "version": "0.0.1",
-  "description": "Webcomponent colouring-book following open-wc recommendations",
-  "author": "colouring-book",
+  "version": "0.0.2",
+  "description": "Webcomponent colouring-book to paint on images with print, save & undo",
+  "author": "David Robertson Esq",
   "license": "MIT",
   "main": "index.js",
   "module": "index.js",
