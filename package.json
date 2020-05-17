@@ -1,5 +1,5 @@
 {
-  "name": "colouring-book",
+  "name": "@arabee/colouring-book",
   "version": "0.0.2",
   "description": "Webcomponent colouring-book to paint on images with print, save & undo",
   "author": "David Robertson Esq",
@@ -58,5 +58,8 @@
       "prettier --write",
       "git add"
     ]
-  }
+  },
+  "publishConfig": {
+    "@arabee:registry":"https://gitlab.com/api/v4/projects/18601562/packages/npm/"
+  }   
 }
