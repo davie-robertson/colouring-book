@@ -159,6 +159,7 @@ input[type="radio"]:checked ~ label {
 			colour: { type: String },
 			noPrint: { type: Boolean },
 			noSave: { type: Boolean },
+			identity: { type: String},
 			_erase: { type: Boolean },
 		};
 	}
@@ -295,7 +296,7 @@ input[type="radio"]:checked ~ label {
 
 	clear() {
 		this.paths = [];
-		localStorage.setItem('v2:' + this.selectedImage, JSON.stringify(this.paths));
+		localStorage.setItem('v2:' +this.identity + this.selectedImage, JSON.stringify(this.paths));
 		this.refresh();
 	}
 
@@ -336,7 +337,7 @@ input[type="radio"]:checked ~ label {
 
 	mouseUp(e) {
 		this.commitActivePath();
-		if (this.dragging) localStorage.setItem('v2:' + this.selectedImage, JSON.stringify(this.paths));
+		if (this.dragging) localStorage.setItem('v2:' +this.identity + this.selectedImage, JSON.stringify(this.paths));
 		this.dragging = false;
 	}
 
@@ -454,7 +455,7 @@ input[type="radio"]:checked ~ label {
 
 	_imageChanged() {
 		this.sizeCanvas();
-		let x = window.localStorage.getItem('v2:' + this.selectedImage);
+		let x = window.localStorage.getItem('v2:' +this.identity + this.selectedImage);
 		if (x) {
 			this.paths = JSON.parse(x);
 			this.refresh();

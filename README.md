@@ -9,6 +9,7 @@ npm i colouring-book
 
 ## Properties
 ```html
+identity - a string containing a unique ID for each user
 images - an array of URLs for each worksheet
 colourPalette - an array of colours that can be used in the component
 noPrint - Boolean to disable print
