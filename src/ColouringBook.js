@@ -167,6 +167,7 @@ input[type="radio"]:checked ~ label {
 	constructor() {
 		super();
 		// this.loadIcons();
+		this.identity='anonymous'
 		this.noSave = false
 		this.noPrint = false
 		this._erase = false
@@ -294,14 +295,19 @@ input[type="radio"]:checked ~ label {
 		document.getElementsByTagName.removeChild(save);
 	}
 
+	storeLocal() {
+		localStorage.setItem('arabee:' +this.identity + this.selectedImage, JSON.stringify(this.paths));
+	}
+
 	clear() {
 		this.paths = [];
-		localStorage.setItem('v2:' +this.identity + this.selectedImage, JSON.stringify(this.paths));
+		this.storeLocal()
 		this.refresh();
 	}
 
 	undo() {
 		this.paths.pop();
+		this.storeLocal()
 		this.refresh();
 	}
 
@@ -337,7 +343,7 @@ input[type="radio"]:checked ~ label {
 
 	mouseUp(e) {
 		this.commitActivePath();
-		if (this.dragging) localStorage.setItem('v2:' +this.identity + this.selectedImage, JSON.stringify(this.paths));
+		if (this.dragging) this.storeLocal();
 		this.dragging = false;
 	}
 
@@ -455,7 +461,7 @@ input[type="radio"]:checked ~ label {
 
 	_imageChanged() {
 		this.sizeCanvas();
-		let x = window.localStorage.getItem('v2:' +this.identity + this.selectedImage);
+		let x = window.localStorage.getItem('arabee:' +this.identity + this.selectedImage);
 		if (x) {
 			this.paths = JSON.parse(x);
 			this.refresh();
