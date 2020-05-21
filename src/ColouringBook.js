@@ -215,24 +215,24 @@ input[type="radio"]:checked ~ label {
 	}
 
 	touchStart(oe) {
-		let e = oe.originalEvent;
-		let touch = e.touches[0];
+		let e = oe.currentTarget;
+		let touch = oe.touches.item(0);
 		e.clientX = touch.clientX;
 		e.clientY = touch.clientY;
 		this.mouseDown(e)
 	}
 
 	touchEnd(oe) {
-		let e = oe.originalEvent;
+		let e = oe.currentTarget;
 		this.mouseUp(e);
 	}
 
 	touchMove(oe) {
-		let e = oe.originalEvent;
-		if (e.touches.length >= 2) return true; // allow 2 finger gestures through
-		e.preventDefault();
-		e.stopPropagation();
-		let touch = e.touches[0];
+		let e = oe.currentTarget;
+		if (oe.targetTouches.length >= 2) return true; // allow 2 finger gestures through
+		oe.preventDefault();
+		oe.stopPropagation();
+		let touch = oe.touches[0];
 		e.clientX = touch.clientX;
 		e.clientY = touch.clientY;
 		this.mouseMove(e)
