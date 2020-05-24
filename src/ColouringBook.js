@@ -39,19 +39,26 @@ export class ColouringBook extends LitElement {
     /*default theme*/
 	.imageNav {
 		direction: rtl;
+		display:flex;
+		height:150px;
 	}
-
-    .imageNav img {
-        box-sizing:border-box;
+	.thumbcanvas, .imageNav img {
+		box-sizing: border-box;
+		position: absolute;
+			top: 0px;
+			left: 0px;
+			width:100%;
+    }
+    img.selected {
+        border: 3px solid green; 
+    }
+	.muppet {
+		position: relative;
+		box-sizing: border-box;
         border:3px solid transparent;
         width:12%; min-width:75px; max-width:150px;
         margin:4px;
-
-    }
-    .imageNav img.selected {
-        border: 3px solid green; 
-      
-    }
+	}
     .toolbar {
         z-index:100000;
         position: sticky;  position: -webkit-sticky; 
@@ -87,7 +94,6 @@ export class ColouringBook extends LitElement {
         border-color:black;
         transform: scale(1.2);
     }
-
     .canvasWrapper {
         display:inline-block;
         position:relative;
@@ -106,60 +112,51 @@ export class ColouringBook extends LitElement {
         width:100%;
     }
     .canvasBackgroundImage{width:100%}
-	
 	.form__options {
 	border: none;
 	padding: 0;
-}
+	}
+	.form__question {
+		font-size: 25px;
+	}
+	.form__answer {
+		display: inline-block;
+		box-sizing: border-box;
+		vertical-align: top;
+	}
+	label {
+		border: 1px solid rgba(#FAFAFA,.15);
+		cursor: pointer;
+		opacity: .25;
+		transition: all .5s ease-in-out;
+	}
+	/* Input style */
+	input[type="radio"] {
+		opacity: 0;
+		width: 0;
+		height: 0;
+	}
+	input[type="radio"]:active ~ label {
+	opacity: 1;
+	}
 
-.form__question {
-	font-size: 25px;
-}
-
-.form__answer {
-	display: inline-block;
-	box-sizing: border-box;
-
-
-	vertical-align: top;
-}
-
-label {
-	border: 1px solid rgba(#FAFAFA,.15);
-
-	cursor: pointer;
-	opacity: .25;
-	transition: all .5s ease-in-out;
-
-}
-/* Input style */
-
-input[type="radio"] {
-	opacity: 0;
-	width: 0;
-  	height: 0;
-}
-
-input[type="radio"]:active ~ label {
-  opacity: 1;
-}
-
-input[type="radio"]:checked ~ label {
-  opacity: 1;
-}
+	input[type="radio"]:checked ~ label {
+	opacity: 1;
+	}
 	`;
 	}
 
 	static get properties() {
 		return {
 			images: { type: Array },
+			onThumbnails: { type: Boolean },
 			paletteColours: { type: Array },
 			maxBrushSize: { type: Number },
 			selectedImage: { type: String },
 			colour: { type: String },
 			noPrint: { type: Boolean },
 			noSave: { type: Boolean },
-			identity: { type: String},
+			identity: { type: String },
 			_erase: { type: Boolean },
 		};
 	}
@@ -167,26 +164,27 @@ input[type="radio"]:checked ~ label {
 	constructor() {
 		super();
 		// this.loadIcons();
-		this.identity='anonymous'
+		this.identity = 'anonymous'
+		this.onThumbnails = false
 		this.noSave = false
 		this.noPrint = false
 		this._erase = false
 		this.maxbrushsize = 8
 		this.paletteColours = [
-			'rgba(87, 87, 87,0.8)',
-			'rgba(220, 35, 35,0.8)',
-			'rgba(42, 75, 215,0.8)',
-			'rgba(29, 105, 20,0.8)',
-			'rgba(129, 74, 25,0.8)',
-			'rgba(129, 38, 192,0.8)',
-			'rgba(160, 160, 160,0.8)',
-			'rgba(129, 197, 122,0.8)',
-			'rgba(157, 175, 255,0.8)',
-			'rgba(41, 208, 208,0.8)',
-			'rgba(255, 146, 51,0.8)',
-			'rgba(255, 238, 51,0.8)',
-			'rgba(233, 222, 187,0.8)',
-			'rgba(255, 205, 243,0.8)',
+			'rgba(87,87,87,0.8)',
+			'rgba(220,35,35,0.8)',
+			'rgba(42,75,215,0.8)',
+			'rgba(29,105,20,0.8)',
+			'rgba(129,74,25,0.8)',
+			'rgba(129,38,192,0.8)',
+			'rgba(160,160,160,0.8)',
+			'rgba(129,197,122,0.8)',
+			'rgba(157,175,255,0.8)',
+			'rgba(41,208,208,0.8)',
+			'rgba(255,146,51,0.8)',
+			'rgba(255,238,51,0.8)',
+			'rgba(233,222,187,0.8)',
+			'rgba(255,205,243,0.8)',
 			'white']; // last colour is eraser
 		this.dragging = false;
 		this.brushSize = 16;
@@ -197,22 +195,39 @@ input[type="radio"]:checked ~ label {
 	firstUpdated() {
 		this.sizer = this.shadowRoot.getElementById('sizerTool');
 		this.wrapper = this.shadowRoot.getElementById('wrapper');
+
 		this.canvas = this.shadowRoot.getElementById('canvas');
+		this.ctx = this.canvas.getContext('2d');
+
 		this.activeCanvas = this.shadowRoot.getElementById('activeCanvas');
-		this.selectImage(this.images[0]);
+		this.activeCtx = this.activeCanvas.getContext('2d');
+
+		// this.canvasThumb = this.shadowRoot.getElementById(`can-0`)
+		// this.canvasThumbCtx = this.canvasThumb.getContext('2d')
+		// this.imageThumb = this.shadowRoot.getElementById(`img-0`)
+
+		this.selectImage(this.images[0],0);
 		this._imageChanged()
-		this.setCursor();
-		this.colour=this.paletteColours[0]
+
+		this.colour = this.paletteColours[0]
 		this.setCursor()
 	}
 
-	selectImage(sourceImg) {
+	selectImage(sourceImg, index) {
 		if (this.selectedImage !== sourceImg) {
 			this.selectedImage = sourceImg
 			this.img = this.shadowRoot.getElementById(`canvasImage`)
+			if (this.onThumbnails) {
+				this.canvasThumb = this.shadowRoot.getElementById(`can-${index}`)
+				this.canvasThumbCtx = this.canvasThumb.getContext('2d')
+				this.imageThumb = this.shadowRoot.getElementById(`img-${index}`)
+				
+				this.canvasPos = this.canvas.getBoundingClientRect();
+				this.canvasThumb.height = this.imageThumb.naturalHeight;
+				this.canvasThumb.width = this.imageThumb.naturalWidth;
+			}
 		}
-
-		this.drawCanvas();
+		// this.drawCanvas();
 	}
 
 	touchStart(oe) {
@@ -222,12 +237,10 @@ input[type="radio"]:checked ~ label {
 		e.clientY = touch.clientY;
 		this.mouseDown(e)
 	}
-
 	touchEnd(oe) {
 		let e = oe.currentTarget;
 		this.mouseUp(e);
 	}
-
 	touchMove(oe) {
 		let e = oe.currentTarget;
 		if (oe.targetTouches.length >= 2) return true; // allow 2 finger gestures through
@@ -238,8 +251,6 @@ input[type="radio"]:checked ~ label {
 		e.clientY = touch.clientY;
 		this.mouseMove(e)
 	}
-
-
 	async print() {
 		const dataUrl = await this.getImageData();
 
@@ -261,7 +272,6 @@ input[type="radio"]:checked ~ label {
 			printWin.close();
 		}, true);
 	}
-
 	loadImage(url) {
 		return new Promise(resolve => {
 			const image = new Image();
@@ -271,7 +281,6 @@ input[type="radio"]:checked ~ label {
 			image.src = url;
 		});
 	}
-
 	async getImageData() {
 		let height = this.img.naturalHeight;
 		let width = this.img.naturalWidth;
@@ -284,45 +293,28 @@ input[type="radio"]:checked ~ label {
 		c.drawImage(i, 0, 0);
 		return cv.toDataURL('image/png');
 	}
-
 	async save() {
 		let link = await this.getImageData();
 		var save = document.createElement('a');
 		save.href = link;
-		save.download = "arabee-worksheet.png";
+		save.download = "davie-worksheet.png";
 		document.body.appendChild(save);
 		save.click()
 		document.getElementsByTagName.removeChild(save);
 	}
-
 	storeLocal() {
-		localStorage.setItem('arabee:' +this.identity + this.selectedImage, JSON.stringify(this.paths));
+		localStorage.setItem('davie:' + this.identity + this.selectedImage, JSON.stringify(this.paths));
 	}
-
 	clear() {
 		this.paths = [];
 		this.storeLocal()
-		this.refresh();
+		this.refresh(this.ctx, this.img);
 	}
-
 	undo() {
 		this.paths.pop();
 		this.storeLocal()
-		this.refresh();
+		this.refresh(this.ctx, this.img);
 	}
-
-	sizeCanvas() {
-		this.sizer = this.shadowRoot.getElementById('sizerTool');
-		this.wrapper = this.shadowRoot.getElementById('wrapper');
-		this.canvas = this.shadowRoot.getElementById('canvas');
-		this.activeCanvas = this.shadowRoot.getElementById('activeCanvas');
-		this.canvasPos = this.canvas.getBoundingClientRect();
-		this.canvas.height = this.img.naturalHeight;
-		this.canvas.width = this.img.naturalWidth;
-		this.activeCanvas.height = this.img.naturalHeight;
-		this.activeCanvas.width = this.img.naturalWidth;
-	}
-
 	getCursorPosition(e) {
 		this.canvasPos = this.canvas.getBoundingClientRect();
 		let adj = this.canvas.width / this.canvas.offsetWidth;
@@ -331,7 +323,6 @@ input[type="radio"]:checked ~ label {
 			y: (e.clientY - this.canvasPos.top) * adj,
 		};
 	}
-
 	mouseDown(e) {
 		let pos = this.getCursorPosition(e);
 		this.dragging = true;
@@ -340,13 +331,11 @@ input[type="radio"]:checked ~ label {
 		this.paths.push([pos]);
 		this.setCursor();
 	}
-
 	mouseUp(e) {
 		this.commitActivePath();
 		if (this.dragging) this.storeLocal();
 		this.dragging = false;
 	}
-
 	mouseMove(e) {
 		let pos;
 		if (!this.dragging) return;
@@ -354,25 +343,24 @@ input[type="radio"]:checked ~ label {
 		this.paths[this.paths.length - 1].push(pos); // Append point to current path.
 		this.drawActivePath();
 	}
-
 	commitActivePath() {
 		this.drawActivePath(true);
-	}
+		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb) }
 
+	}
 	clearActivePath() {
 		let height = this.img.naturalHeight;
 		let width = this.img.naturalWidth;
 		let ctx = this.activeCtx;
 		ctx.clearRect(0, 0, width, height);
 	}
-
 	drawActivePath(saveToCanvas = false) {
-
-		this.clearActivePath();
+		this.clearActivePath();  // remove the current path from the top canvas
 		let ctx;
 		let path = this.paths[this.paths.length - 1];
 		if (saveToCanvas == true || path[0].c == 'erase') { ctx = this.ctx; }
-		else { ctx = this.activeCtx; }
+		else { ctx = this.activeCtx;
+		}
 
 		if (!path[0].c) { path[0].c = 0; }
 
@@ -394,17 +382,17 @@ input[type="radio"]:checked ~ label {
 		ctx.stroke();
 	}
 
-	refresh() {
+	refresh(ctx, destinationImg) {
 		this.clearActivePath()
-		let height = this.img.naturalHeight;
-		let width = this.img.naturalWidth;
-		let ctx = this.ctx;
+		let height = destinationImg.naturalHeight;
+		let width = destinationImg.naturalWidth;
+		// let ctx = this.ctx;
 		ctx.clearRect(0, 0, width, height);
 		this.paths.map((path) => {
 			if (!path[0].c) { path[0].c = 0; }
 			ctx.lineCap = 'round';
 			ctx.lineJoin = 'round';
-			ctx.lineWidth = path[0].s * (this.img.naturalWidth / this.img.width);
+			ctx.lineWidth = path[0].s * (destinationImg.naturalWidth / destinationImg.width);
 			if (path[0].c == 'erase') {
 				/* eraser*/
 				ctx.globalCompositeOperation = "destination-out";
@@ -454,21 +442,17 @@ input[type="radio"]:checked ~ label {
 		this.wrapper.style.cursor = `url(${url}) 16 16, pointer`;
 	}
 
-	drawCanvas() {
-		this.ctx = this.shadowRoot.getElementById('canvas').getContext('2d');
-		this.activeCtx = this.shadowRoot.getElementById('activeCanvas').getContext('2d');
-	}
+	// drawCanvas() {
+	// 	this.ctx = this.shadowRoot.getElementById('canvas').getContext('2d');
+	// 	this.activeCtx = this.shadowRoot.getElementById('activeCanvas').getContext('2d');
+	// }
 
 	_imageChanged() {
 		this.sizeCanvas();
-		let x = window.localStorage.getItem('arabee:' +this.identity + this.selectedImage);
-		if (x) {
-			this.paths = JSON.parse(x);
-			this.refresh();
-		} else {
-			this.paths = [];
-			this.refresh();
-		}
+		this.canvasThumb = this.shadowRoot
+		let x = window.localStorage.getItem('davie:' + this.identity + this.selectedImage);
+		x ? this.paths = JSON.parse(x) : this.paths = [];
+		this.refresh(this.ctx, this.img);
 	}
 
 	selectColour(e) {
@@ -492,19 +476,45 @@ input[type="radio"]:checked ~ label {
 		this.setCursor()
 	}
 
+	sizeCanvas() {
+		this.canvasPos = this.canvas.getBoundingClientRect();
+		this.canvas.height = this.img.naturalHeight;
+		this.canvas.width = this.img.naturalWidth;
+		this.activeCanvas.height = this.img.naturalHeight;
+		this.activeCanvas.width = this.img.naturalWidth;
+	}
+	_placeImage(e, img) {
+		const canvas = e.currentTarget.context('2d')
+		img = this.shadowRoot.getElementById(`img-${index}`)
+		// this.canvasPos = this.canvas.getBoundingClientRect();
+		canvas.height = this.img.naturalHeight;
+		canvas.width = this.img.naturalWidth;
+	}
+
 	render() {
 		return html`
 		<div id='wrapper' class="wrapper">
 		<div class="imageNav">
             ${
-			this.images.map(image =>
-				html`<img src='${image}' class="${classMap({ selected: this.selectedImage == image })}" @click=${() => this.selectImage(image)}>
-                `)
+			this.images.map((image, index) =>
+				html`
+				<div class='muppet'>
+					<img src='${image}'
+						id='img-${index}'	
+						@click=${() => this.selectImage(image, index)}
+						class="canvasBackgroundImage ${classMap({ selected: this.selectedImage == image })}"
+					>
+					<canvas class='thumbcanvas'
+						id='can-${index}'
+						@load=${(e) => _placeImage(e, index)}
+						@click=${() => this.selectImage(image, index)}>
+					</canvas>  
+				</div>
+			   `)
 			}
         </div>
 		<div class="toolbar">
 			<div class="tools">
-
 		<p class="form__answer">
 				<input type="radio" name="match" id="match_1" value="2" >
 				<label for="match_1" @click=${() => this.updateSize(2)}>

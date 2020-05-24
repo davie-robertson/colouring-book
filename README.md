@@ -10,6 +10,7 @@ npm i colouring-book
 ## Properties
 ```html
 identity - a string containing a unique ID for each user
+onThumbnails - Boolean to show colour on the thumbnail images too
 images - an array of URLs for each worksheet
 colourPalette - an array of colours that can be used in the component
 noPrint - Boolean to disable print
@@ -34,7 +35,7 @@ noSave - Boolean to disable save/download to local machine
             'white'];
     render(
       html`
-        <colouring-book noPrint .images=${img} .colourPalette=${cols}> 
+        <colouring-book noPrint noSave .images=${img} .colourPalette=${cols} onThumbnails> 
         </colouring-book>
     );
 
