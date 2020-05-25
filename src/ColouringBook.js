@@ -217,6 +217,12 @@ export class ColouringBook extends LitElement {
 		if (this.selectedImage !== sourceImg) {
 			this.selectedImage = sourceImg
 			this.img = this.shadowRoot.getElementById(`canvasImage`)
+			let event = new CustomEvent('image-selected', {
+				detail: {
+					image:this.selectedImage,	
+				}
+			  });
+			  this.dispatchEvent(event);
 			if (this.onThumbnails) {
 				this.canvasThumb = this.shadowRoot.getElementById(`can-${index}`)
 				this.canvasThumbCtx = this.canvasThumb.getContext('2d')
@@ -308,15 +314,28 @@ export class ColouringBook extends LitElement {
 	clear() {
 		this.paths = [];
 		this.storeLocal()
-		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width/this.img.width) }
+		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width / this.img.width) }
 		this.refresh(this.ctx, this.img);
+		let event = new CustomEvent('clear-paths', {
+			detail: {
+				image: this.selectedImage,
+			}
+		});
+		this.dispatchEvent(event);
 
 	}
 	undo() {
 		this.paths.pop();
 		this.storeLocal()
 		this.refresh(this.ctx, this.img);
-		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width/this.img.width) }
+		let event = new CustomEvent('remove-path', {
+			detail: {
+				image: this.selectedImage,
+
+			}
+		});
+		this.dispatchEvent(event);
+		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width / this.img.width) }
 
 	}
 	getCursorPosition(e) {
@@ -349,7 +368,7 @@ export class ColouringBook extends LitElement {
 	}
 	commitActivePath() {
 		this.drawActivePath(true);
-		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width/this.img.width) }
+		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width / this.img.width) }
 	}
 	clearActivePath() {
 		let height = this.img.naturalHeight;
@@ -361,7 +380,16 @@ export class ColouringBook extends LitElement {
 		this.clearActivePath();  // remove the current path from the top canvas
 		let ctx;
 		let path = this.paths[this.paths.length - 1];
-		if (saveToCanvas == true || path[0].c == 'erase') { ctx = this.ctx; }
+		if (saveToCanvas == true || path[0].c == 'erase') {
+			ctx = this.ctx;
+			let event = new CustomEvent('add-path', {
+				detail: {
+					image: this.selectedImage,
+					path
+				}
+			});
+			this.dispatchEvent(event);
+		}
 		else {
 			ctx = this.activeCtx;
 		}
@@ -439,9 +467,9 @@ export class ColouringBook extends LitElement {
 		// this.canvasThumb = this.shadowRoot
 		let x = window.localStorage.getItem('davie:' + this.identity + this.selectedImage);
 		x ? this.paths = JSON.parse(x) : this.paths = [];
-		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width/this.img.width) }
-
+		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width / this.img.width) }
 		this.refresh(this.ctx, this.img);
+
 	}
 
 	selectColour(e) {

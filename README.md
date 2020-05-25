@@ -40,7 +40,16 @@ noSave - Boolean to disable save/download to local machine
     );
 
 ```
+### Events
 
+The following events are emmited by the component
+```html
+@image-selected - the 'image' URL selected
+@clear-paths - all paths ahave been removed for 'image'
+@remove-path - the last drawn path as been removed for 'image'
+@add-path - 'path' (array) has been added to 'image'
+
+```
 
 ## Usage
 ```html
