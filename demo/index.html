@@ -34,7 +34,7 @@
             'white'];
     render(
       html`
-        <colouring-book noPrint .images=${img} .colourPalette=${paletteColours} .maxBrushSize="64"> 
+        <colouring-book noPrint .images=${img} .colourPalette=${paletteColours} .maxBrushSize="64" onThumbnails> 
         </colouring-book>
       `,
       document.querySelector('#demo')
