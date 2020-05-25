@@ -345,7 +345,7 @@ export class ColouringBook extends LitElement {
 	}
 	commitActivePath() {
 		this.drawActivePath(true);
-		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb) }
+		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.img.width/this.imageThumb.width) }
 
 	}
 	clearActivePath() {
@@ -382,7 +382,7 @@ export class ColouringBook extends LitElement {
 		ctx.stroke();
 	}
 
-	refresh(ctx, destinationImg) {
+	refresh(ctx, destinationImg, zoom =1) {
 		this.clearActivePath()
 		let height = destinationImg.naturalHeight;
 		let width = destinationImg.naturalWidth;
@@ -392,7 +392,7 @@ export class ColouringBook extends LitElement {
 			if (!path[0].c) { path[0].c = 0; }
 			ctx.lineCap = 'round';
 			ctx.lineJoin = 'round';
-			ctx.lineWidth = path[0].s * (destinationImg.naturalWidth / destinationImg.width);
+			ctx.lineWidth = path[0].s * (destinationImg.naturalWidth / destinationImg.width)/zoom;
 			if (path[0].c == 'erase') {
 				/* eraser*/
 				ctx.globalCompositeOperation = "destination-out";
