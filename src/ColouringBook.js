@@ -206,7 +206,7 @@ export class ColouringBook extends LitElement {
 		// this.canvasThumbCtx = this.canvasThumb.getContext('2d')
 		// this.imageThumb = this.shadowRoot.getElementById(`img-0`)
 
-		this.selectImage(this.images[0],0);
+		this.selectImage(this.images[0], 0);
 		this._imageChanged()
 
 		this.colour = this.paletteColours[0]
@@ -221,7 +221,7 @@ export class ColouringBook extends LitElement {
 				this.canvasThumb = this.shadowRoot.getElementById(`can-${index}`)
 				this.canvasThumbCtx = this.canvasThumb.getContext('2d')
 				this.imageThumb = this.shadowRoot.getElementById(`img-${index}`)
-				
+
 				this.canvasPos = this.canvas.getBoundingClientRect();
 				this.canvasThumb.height = this.imageThumb.naturalHeight;
 				this.canvasThumb.width = this.imageThumb.naturalWidth;
@@ -308,12 +308,16 @@ export class ColouringBook extends LitElement {
 	clear() {
 		this.paths = [];
 		this.storeLocal()
+		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width/this.img.width) }
 		this.refresh(this.ctx, this.img);
+
 	}
 	undo() {
 		this.paths.pop();
 		this.storeLocal()
 		this.refresh(this.ctx, this.img);
+		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width/this.img.width) }
+
 	}
 	getCursorPosition(e) {
 		this.canvasPos = this.canvas.getBoundingClientRect();
@@ -345,8 +349,7 @@ export class ColouringBook extends LitElement {
 	}
 	commitActivePath() {
 		this.drawActivePath(true);
-		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.img.width/this.imageThumb.width) }
-
+		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width/this.img.width) }
 	}
 	clearActivePath() {
 		let height = this.img.naturalHeight;
@@ -359,55 +362,44 @@ export class ColouringBook extends LitElement {
 		let ctx;
 		let path = this.paths[this.paths.length - 1];
 		if (saveToCanvas == true || path[0].c == 'erase') { ctx = this.ctx; }
-		else { ctx = this.activeCtx;
+		else {
+			ctx = this.activeCtx;
 		}
+		let ratio = this.img.naturalWidth / this.img.width;
+		this._drawPath(ctx, path, ratio)
+	}
 
-		if (!path[0].c) { path[0].c = 0; }
+	refresh(ctx, destinationImg, zoom = 1) {
+		this.clearActivePath()
+		let height = destinationImg.naturalHeight;
+		let width = destinationImg.naturalWidth;
+		let ratio = (width / destinationImg.width) * zoom
+		// let ctx = this.ctx;
+		ctx.clearRect(0, 0, width, height);
+		this.paths.map((path) => {
+			this._drawPath(ctx, path, ratio)
+		})
+	}
 
+	_drawPath(ctx, path, ratio) {
+		if (!path[0].c) { path[0].c = this.paletteColours[0]; }
 		ctx.lineCap = 'round';
 		ctx.lineJoin = 'round';
-		ctx.lineWidth = path[0].s * (this.img.naturalWidth / this.img.width);
+		ctx.lineWidth = path[0].s * ratio;
 		if (path[0].c == 'erase') {
-			/*eraser*/
+			/* eraser*/
 			ctx.globalCompositeOperation = "destination-out";
 			ctx.strokeStyle = `white`;
-		} else {
+		}
+		else {
 			ctx.globalCompositeOperation = "source-over";
 			ctx.strokeStyle = path[0].c;
 		}
 		ctx.beginPath();
 		ctx.moveTo(path[0].x, path[0].y);
-		for (let j = 1; j < path.length; ++j)
-			ctx.lineTo(path[j].x, path[j].y);
+		path.map(line =>
+			ctx.lineTo(line.x, line.y))
 		ctx.stroke();
-	}
-
-	refresh(ctx, destinationImg, zoom =1) {
-		this.clearActivePath()
-		let height = destinationImg.naturalHeight;
-		let width = destinationImg.naturalWidth;
-		// let ctx = this.ctx;
-		ctx.clearRect(0, 0, width, height);
-		this.paths.map((path) => {
-			if (!path[0].c) { path[0].c = 0; }
-			ctx.lineCap = 'round';
-			ctx.lineJoin = 'round';
-			ctx.lineWidth = path[0].s * (destinationImg.naturalWidth / destinationImg.width)/zoom;
-			if (path[0].c == 'erase') {
-				/* eraser*/
-				ctx.globalCompositeOperation = "destination-out";
-				ctx.strokeStyle = `white`;
-			}
-			else {
-				ctx.globalCompositeOperation = "source-over";
-				ctx.strokeStyle = path[0].c;
-			}
-			ctx.beginPath();
-			ctx.moveTo(path[0].x, path[0].y);
-			path.map(line =>
-				ctx.lineTo(line.x, line.y))
-			ctx.stroke();
-		})
 	}
 
 	updateSize(size = 8) {
@@ -442,16 +434,13 @@ export class ColouringBook extends LitElement {
 		this.wrapper.style.cursor = `url(${url}) 16 16, pointer`;
 	}
 
-	// drawCanvas() {
-	// 	this.ctx = this.shadowRoot.getElementById('canvas').getContext('2d');
-	// 	this.activeCtx = this.shadowRoot.getElementById('activeCanvas').getContext('2d');
-	// }
-
 	_imageChanged() {
 		this.sizeCanvas();
-		this.canvasThumb = this.shadowRoot
+		// this.canvasThumb = this.shadowRoot
 		let x = window.localStorage.getItem('davie:' + this.identity + this.selectedImage);
 		x ? this.paths = JSON.parse(x) : this.paths = [];
+		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width/this.img.width) }
+
 		this.refresh(this.ctx, this.img);
 	}
 
@@ -483,13 +472,7 @@ export class ColouringBook extends LitElement {
 		this.activeCanvas.height = this.img.naturalHeight;
 		this.activeCanvas.width = this.img.naturalWidth;
 	}
-	_placeImage(e, img) {
-		const canvas = e.currentTarget.context('2d')
-		img = this.shadowRoot.getElementById(`img-${index}`)
-		// this.canvasPos = this.canvas.getBoundingClientRect();
-		canvas.height = this.img.naturalHeight;
-		canvas.width = this.img.naturalWidth;
-	}
+
 
 	render() {
 		return html`
@@ -498,16 +481,14 @@ export class ColouringBook extends LitElement {
             ${
 			this.images.map((image, index) =>
 				html`
-				<div class='muppet'>
+				<div class='muppet' @click=${() => this.selectImage(image, index)}>
 					<img src='${image}'
 						id='img-${index}'	
 						@click=${() => this.selectImage(image, index)}
 						class="canvasBackgroundImage ${classMap({ selected: this.selectedImage == image })}"
 					>
 					<canvas class='thumbcanvas'
-						id='can-${index}'
-						@load=${(e) => _placeImage(e, index)}
-						@click=${() => this.selectImage(image, index)}>
+						id='can-${index}'>
 					</canvas>  
 				</div>
 			   `)
@@ -563,7 +544,7 @@ export class ColouringBook extends LitElement {
 			<div class="palette">
                 ${this.paletteColours.map((col, index) => (html`
                     <div class='paletteColour ${classMap({ selected: this.colour == col })}'
-                    style=${styleMap({ backgroundColor: col })} data-colour='${col}' data-debug="${this.colour} ${col}"
+                    style='${styleMap({ backgroundColor: col })}' data-colour='${col}' data-debug="${this.colour} ${col}"
                     @click=${(e) => this.selectColour(e)}>
                     </div>
                   `
