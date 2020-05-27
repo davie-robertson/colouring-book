@@ -1,21 +1,36 @@
-# \<colouring-book>
+# `<colouring-book>` [![Published on npm](https://img.shields.io/npm/v/@manastrophe/colouring-bbok.svg)](https://www.npmjs.com/package/@anastrophe/colouring-book)
 
-This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
+This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendations.
+
+With special thanks to `https://github.com/collinph/jl-coloringbook` for the original concept and `<canvas>` code
 
 ## Installation
 ```bash
 npm i colouring-book
 ```
 
-## Properties
-```html
-identity - a string containing a unique ID for each user
-onThumbnails - Boolean to show colour on the thumbnail images too
-images - an array of URLs for each worksheet
-colourPalette - an array of colours that can be used in the component
-noPrint - Boolean to disable print
-noSave - Boolean to disable save/download to local machine
+## API
+#### Properties/Attributes
+| Name | Type | Default | Description
+| ---- | ---- | ------- | -----------
+| `identity` | `String` | `annonymous` | a string containing a unique ID for each user (used for local caching of coluring in).
+| `images` | `Array` | `''` | An array of URLs for each page to be coloured in - defaults to first image in array.
+| `colourPalette` | `Array` | see example | An array of colours (in html/css format) that can be selected by the user - defaults to first colour.
+| `noPrint` | `Boolean` | `false` | Restricts the user from printing pages with their colouring in.
+| `noSave` | `Boolean` | `false` | Restricts the user from saving pages locally as `.png` files.
+| `noThumbnails` | `Boolean` | `false` | Applies the colouring in to the thumbnail images of each page.
 
+### Events
+| Event Name | Target       | Detail             | Description
+| ---------- | ------------ | ------------------ | -----------
+| `image-selected`    | `colouring-book` | `image`           | Fired when a new `image` is selectd. 
+| `add-path`   | `colouring-book` | `image`, `path`           | Fired when the a new coluring `path` is added to an `image`. 
+| `remove-path`   | `colouring-book` | `image`, `path`           | Fired when a `path` is removed from an `image`. 
+| `clear`   | `colouring-book` | `image`           | Fired when all `path`'s are removed from an `image`. 
+
+
+## Example
+```html
     const img = ['images/L0_P_U1_IW2.pdf-1.png','images/L0_P_U1_IW2.pdf-2.png'];
     const cols=[
             'rgba(87, 87, 87,0.8)',
@@ -35,19 +50,10 @@ noSave - Boolean to disable save/download to local machine
             'white'];
     render(
       html`
-        <colouring-book noPrint noSave .images=${img} .colourPalette=${cols} onThumbnails> 
+        <colouring-book noPrint noSave .images=${img} .colourPalette=${cols} onThumbnails @add-path=${(e) => _addPath(e)}> 
         </colouring-book>
+        `
     );
-
-```
-### Events
-
-The following events are emmited by the component
-```html
-@image-selected - the 'image' URL selected
-@clear-paths - all paths ahave been removed for 'image'
-@remove-path - the last drawn path as been removed for 'image'
-@add-path - 'path' (array) has been added to 'image'
 
 ```
 
@@ -59,63 +65,6 @@ The following events are emmited by the component
 
 <colouring-book></colouring-book>
 ```
-
-## Linting with ESLint, Prettier, and Types
-To scan the project for linting errors, run
-```bash
-npm run lint
-```
-
-You can lint with ESLint and Prettier individually as well
-```bash
-npm run lint:eslint
-```
-```bash
-npm run lint:prettier
-```
-
-To automatically fix many linting errors, run
-```bash
-npm run format
-```
-
-You can format using ESLint and Prettier individually as well
-```bash
-npm run format:eslint
-```
-```bash
-npm run format:prettier
-```
-
-## Testing with Karma
-To run the suite of karma tests, run
-```bash
-npm run test
-```
-
-To run the tests in watch mode (for <abbr title="test driven development">TDD</abbr>, for example), run
-
-```bash
-npm run test:watch
-```
-
-## Demoing with Storybook
-To run a local instance of Storybook for your component, run
-```bash
-npm run storybook
-```
-
-To build a production version of Storybook, run
-```bash
-npm run storybook:build
-```
-
-
-## Tooling configs
-
-For most of the tools, the configuration is in the `package.json` to reduce the amount of files in your project.
-
-If you customize the configuration a lot, you can consider moving them to individual files.
 
 ## Local Demo with `es-dev-server`
 ```bash
