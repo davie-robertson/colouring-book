@@ -34,21 +34,43 @@ export class ColouringBook extends LitElement {
         -khtml-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
-        user-select: none;}
-    
+        user-select: none;
+		display: flex;
+		flex-direction: column;	
+	}
+	.wrapper.previewRight{
+		flex-direction: row;
+		flex-wrap: wrap;	
+	}
+	.wrapper.previewRight .imageNav{
+		width: 20%;
+    	order: 3;
+		display: block;
+	}
+	.wrapper.previewRight .imageNav .muppet {
+		min-width: 100%;
+   	 	max-width: 100%;
+	}
+	.wrapper.previewRight .canvasWrapper {
+		width: 80%;
+	}
+	.wrapper.previewRight .toolbar {
+		width: 100%;
+	}
     /*default theme*/
 	.imageNav {
 		direction: rtl;
 		display:flex;
-		height:150px;
 	}
 	.thumbcanvas, .imageNav img {
 		box-sizing: border-box;
-		position: absolute;
-			top: 0px;
-			left: 0px;
-			width:100%;
+		width:100%;
     }
+	.thumbcanvas{
+		position: absolute;
+		top: 0px;
+		left: 0px;
+	}
     img.selected {
         border: 3px solid green; 
     }
@@ -63,7 +85,8 @@ export class ColouringBook extends LitElement {
         z-index:100000;
         position: sticky;  position: -webkit-sticky; 
         top: 0;
-        background-color: rgba(200,200,200,.1) 
+        /* background-color: rgba(200,200,200,.1); */
+		background-color: rgba(255,255,255,.8) 
     }
     .tools {
         display:flex;
@@ -127,7 +150,7 @@ export class ColouringBook extends LitElement {
 	label {
 		border: 1px solid rgba(#FAFAFA,.15);
 		cursor: pointer;
-		opacity: .25;
+		opacity: .45;
 		transition: all .5s ease-in-out;
 	}
 	/* Input style */
@@ -158,6 +181,7 @@ export class ColouringBook extends LitElement {
 			noSave: { type: Boolean },
 			identity: { type: String },
 			_erase: { type: Boolean },
+			preview: { type: String }
 		};
 	}
 
@@ -189,7 +213,8 @@ export class ColouringBook extends LitElement {
 		this.dragging = false;
 		this.brushSize = 16;
 		this.paths = [];
-		this.selectedImage = ""
+		this.selectedImage = "";
+		this.preview = "";
 	}
 
 	firstUpdated() {
@@ -212,7 +237,20 @@ export class ColouringBook extends LitElement {
 		this.colour = this.paletteColours[0]
 		this.setCursor()
 	}
+async _getHistory(image, index) {
+	 let x = await window.localStorage.getItem('davie:' + this.identity + this.selectedImage);
+	x ? this.paths = JSON.parse(x) : this.paths = [];
+		let canvasThumbCtx=this._getCTX(`can-${index}`);
+		let imageThumb=this.shadowRoot.getElementById(`img-${index}`)
+		let ratio = imageThumb.width / this.img.width
+		
+		await this.refresh(canvasThumbCtx, imageThumb,ratio )
+	
+}
 
+	_getCTX(image) {
+		return this.shadowRoot.getElementById(image).getContext('2d')
+	}
 	selectImage(sourceImg, index) {
 		if (this.selectedImage !== sourceImg) {
 			this.selectedImage = sourceImg
@@ -431,7 +469,13 @@ export class ColouringBook extends LitElement {
 	}
 
 	updateSize(size = 8) {
+		if (size) {
 		this.brushSize = size
+		this._erase ? this._erase=false : null
+		
+		} else {
+			this._erase=true
+		} 
 		this.setCursor();
 	}
 
@@ -474,11 +518,6 @@ export class ColouringBook extends LitElement {
 
 	selectColour(e) {
 		this.colour = e.currentTarget.dataset.colour
-		if (this._erase) {
-			const eraseButton = this.shadowRoot.getElementById('eraser')
-			eraseButton.on = false
-			this._erase = false
-		}
 		this.setCursor()
 	}
 
@@ -504,81 +543,91 @@ export class ColouringBook extends LitElement {
 
 	render() {
 		return html`
-		<div id='wrapper' class="wrapper">
-		<div class="imageNav">
-            ${
-			this.images.map((image, index) =>
-				html`
-				<div class='muppet' @click=${() => this.selectImage(image, index)}>
-					<img src='${image}'
-						id='img-${index}'	
-						@click=${() => this.selectImage(image, index)}
-						class="canvasBackgroundImage ${classMap({ selected: this.selectedImage == image })}"
-					>
-					<canvas class='thumbcanvas'
-						id='can-${index}'>
-					</canvas>  
+		<div id='wrapper' class="wrapper ${ this.preview === 'right' ? 'previewRight' : '' }">
+			<!-- child -->
+			<div class="imageNav">
+				${
+				this.images.map((image, index) =>
+					html`
+					<div class='muppet' @click=${() => this.selectImage(image, index)}>
+						<img src='${image}'
+							id='img-${index}'	
+							@click=${() => this.selectImage(image, index)}
+							@load=${() => this._getHistory(image, index)}
+							class="canvasBackgroundImage ${classMap({ selected: this.selectedImage == image })}"
+						>
+						<canvas class='thumbcanvas'
+							id='can-${index}'>
+						</canvas>  
+					</div>
+				`)
+				}
+			</div>
+			<!-- child -->
+			<div class="toolbar">
+				<div class="tools">
+				<p class="form__answer">
+						<input type="radio" name="match" id="match_1" value="2" >
+						<label for="match_1" @click=${() => this.updateSize(2)}>
+							${framed_colour_pen1}					
+						</label></p>
+				<p class="form__answer"> 
+						<input type="radio" name="match" id="match_2" value="8" checked> 
+						<label for="match_2" @click=${() => this.updateSize(8)}>
+							${framed_colour_pen2}					
+						</label></p>		
+				<p class="form__answer"> 
+						<input type="radio" name="match" id="match_3" value="16" > 
+						<label for="match_3" @click=${() => this.updateSize(16)}>
+							${framed_colour_pen3}					
+						</label></p>
+				<p class="form__answer"> 
+						<input type="radio" name="match" id="match_4" value="32" > 
+						<label for="match_4" @click=${() => this.updateSize(32)}>
+							${framed_colour_pen4}					
+						</label></p>
+				<p class="form__answer"> 
+						<input type="radio" name="match" id="match_5" value="0" > 
+						<label for="match_5" @click=${() => this.updateSize(0)}>
+							${framed_colour_eraser}					
+						</label></p>
+
+
+				<!-- <mwc-icon-button-toggle id='eraser' @MDCIconButtonToggle:change=${(e) => this.toggleErase(e)}>
+				${framed_colour_eraser}
+				${framed_mono_eraser}
+				</mwc-icon-button-toggle> -->
+
+
+				<div class="spacer"><i>use two fingers to scroll</i></div>
+				<mwc-icon-button @click=${this.undo}>${undoIcon}</mwc-icon-button>
+				<mwc-icon-button @click=${this.clear}>${clearIcon}</mwc-icon-button>
+				
+				${!this.noPrint ? html`
+				<mwc-icon-button @click=${this.print}>${printIcon}</mwc-icon-button>
+				`
+						:
+						html``
+					}
+				${!this.noSave ? html`
+				<mwc-icon-button @click=${this.save}>${saveIcon}</mwc-icon-button>
+				`
+						:
+						html``
+					}
+
 				</div>
-			   `)
-			}
-        </div>
-		<div class="toolbar">
-			<div class="tools">
-		<p class="form__answer">
-				<input type="radio" name="match" id="match_1" value="2" >
-				<label for="match_1" @click=${() => this.updateSize(2)}>
-					${framed_colour_pen1}					
-				</label></p>
-		<p class="form__answer"> 
-				<input type="radio" name="match" id="match_2" value="8" checked> 
-				<label for="match_2" @click=${() => this.updateSize(8)}>
-					${framed_colour_pen2}					
-				</label></p>		
-		<p class="form__answer"> 
-				<input type="radio" name="match" id="match_3" value="16" > 
-				<label for="match_3" @click=${() => this.updateSize(16)}>
-					${framed_colour_pen3}					
-				</label></p>
-		<p class="form__answer"> 
-				<input type="radio" name="match" id="match_4" value="32" > 
-				<label for="match_4" @click=${() => this.updateSize(32)}>
-					${framed_colour_pen4}					
-				</label></p>
-
-		<mwc-icon-button-toggle id='eraser' @MDCIconButtonToggle:change=${(e) => this.toggleErase(e)}>
-		${framed_colour_eraser}
-		${framed_mono_eraser}
-		</mwc-icon-button-toggle>
-
-
-		<div class="spacer"></div>
-        <mwc-icon-button @click=${this.undo}>${undoIcon}</mwc-icon-button>
-        <mwc-icon-button @click=${this.clear}>${clearIcon}</mwc-icon-button>
-		
-		${!this.noPrint ? html`
-		<mwc-icon-button @click=${this.print}>${printIcon}</mwc-icon-button>
-		`
-				:
-				html``
-			}
-		${!this.noSave ? html`
-		<mwc-icon-button @click=${this.save}>${saveIcon}</mwc-icon-button>
-		`
-				:
-				html``
-			}
-
-		</div>
-			<div class="palette">
-                ${this.paletteColours.map((col, index) => (html`
-                    <div class='paletteColour ${classMap({ selected: this.colour == col })}'
-                    style='${styleMap({ backgroundColor: col })}' data-colour='${col}' data-debug="${this.colour} ${col}"
-                    @click=${(e) => this.selectColour(e)}>
-                    </div>
-                  `
-			))}
+				<div class="palette">
+					${this.paletteColours.map((col, index) => (html`
+						<div class='paletteColour ${classMap({ selected: this.colour == col })}'
+						style='${styleMap({ backgroundColor: col })}' data-colour='${col}' data-debug="${this.colour} ${col}"
+						@click=${(e) => this.selectColour(e)}>
+						</div>
+					`
+				))}
               </div>
             </div>
+			<!-- child -->
             <div class="canvasWrapper">
               <img
                 id="canvasImage"

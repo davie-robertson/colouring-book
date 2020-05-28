@@ -19,6 +19,7 @@ npm i colouring-book
 | `noPrint` | `Boolean` | `false` | Restricts the user from printing pages with their colouring in.
 | `noSave` | `Boolean` | `false` | Restricts the user from saving pages locally as `.png` files.
 | `noThumbnails` | `Boolean` | `false` | Applies the colouring in to the thumbnail images of each page.
+| `preview` | `String` | `''` | When set to `right` the thumbnails will appear on the right of the `image`, default is above images.
 
 ### Events
 | Event Name | Target       | Detail             | Description
