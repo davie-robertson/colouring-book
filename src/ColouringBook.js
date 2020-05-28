@@ -237,7 +237,20 @@ export class ColouringBook extends LitElement {
 		this.colour = this.paletteColours[0]
 		this.setCursor()
 	}
+async _getHistory(image, index) {
+	 let x = await window.localStorage.getItem('davie:' + this.identity + this.selectedImage);
+	x ? this.paths = JSON.parse(x) : this.paths = [];
+		let canvasThumbCtx=this._getCTX(`can-${index}`);
+		let imageThumb=this.shadowRoot.getElementById(`img-${index}`)
+		let ratio = imageThumb.width / this.img.width
+		
+		await this.refresh(canvasThumbCtx, imageThumb,ratio )
+	
+}
 
+	_getCTX(image) {
+		return this.shadowRoot.getElementById(image).getContext('2d')
+	}
 	selectImage(sourceImg, index) {
 		if (this.selectedImage !== sourceImg) {
 			this.selectedImage = sourceImg
@@ -540,6 +553,7 @@ export class ColouringBook extends LitElement {
 						<img src='${image}'
 							id='img-${index}'	
 							@click=${() => this.selectImage(image, index)}
+							@load=${() => this._getHistory(image, index)}
 							class="canvasBackgroundImage ${classMap({ selected: this.selectedImage == image })}"
 						>
 						<canvas class='thumbcanvas'
