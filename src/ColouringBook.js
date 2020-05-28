@@ -585,7 +585,7 @@ export class ColouringBook extends LitElement {
 				</mwc-icon-button-toggle> -->
 
 
-				<div class="spacer"></div>
+				<div class="spacer"><i>use two fingers to scroll</div>
 				<mwc-icon-button @click=${this.undo}>${undoIcon}</mwc-icon-button>
 				<mwc-icon-button @click=${this.clear}>${clearIcon}</mwc-icon-button>
 				
