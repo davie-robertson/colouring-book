@@ -150,7 +150,7 @@ export class ColouringBook extends LitElement {
 	label {
 		border: 1px solid rgba(#FAFAFA,.15);
 		cursor: pointer;
-		opacity: .25;
+		opacity: .45;
 		transition: all .5s ease-in-out;
 	}
 	/* Input style */
@@ -456,7 +456,13 @@ export class ColouringBook extends LitElement {
 	}
 
 	updateSize(size = 8) {
+		if (size) {
 		this.brushSize = size
+		this._erase ? this._erase=false : null
+		
+		} else {
+			this._erase=true
+		} 
 		this.setCursor();
 	}
 
@@ -499,11 +505,6 @@ export class ColouringBook extends LitElement {
 
 	selectColour(e) {
 		this.colour = e.currentTarget.dataset.colour
-		if (this._erase) {
-			const eraseButton = this.shadowRoot.getElementById('eraser')
-			eraseButton.on = false
-			this._erase = false
-		}
 		this.setCursor()
 	}
 
@@ -571,11 +572,17 @@ export class ColouringBook extends LitElement {
 						<label for="match_4" @click=${() => this.updateSize(32)}>
 							${framed_colour_pen4}					
 						</label></p>
+				<p class="form__answer"> 
+						<input type="radio" name="match" id="match_5" value="0" > 
+						<label for="match_5" @click=${() => this.updateSize(0)}>
+							${framed_colour_eraser}					
+						</label></p>
 
-				<mwc-icon-button-toggle id='eraser' @MDCIconButtonToggle:change=${(e) => this.toggleErase(e)}>
+
+				<!-- <mwc-icon-button-toggle id='eraser' @MDCIconButtonToggle:change=${(e) => this.toggleErase(e)}>
 				${framed_colour_eraser}
 				${framed_mono_eraser}
-				</mwc-icon-button-toggle>
+				</mwc-icon-button-toggle> -->
 
 
 				<div class="spacer"></div>
