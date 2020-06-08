@@ -345,7 +345,7 @@ async _getHistory(image, index) {
 		save.download = "davie-worksheet.png";
 		document.body.appendChild(save);
 		save.click()
-		document.getElementsByTagName.removeChild(save);
+		document.removeChild(save);
 	}
 	storeLocal() {
 		localStorage.setItem('davie:' + this.identity + this.selectedImage, JSON.stringify(this.paths));
