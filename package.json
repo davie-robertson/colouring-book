@@ -1,6 +1,6 @@
 {
   "name": "@arabee/colouring-book",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Webcomponent colouring-book to paint on images with print, save & undo",
   "author": "David Robertson Esq",
   "license": "MIT",
