@@ -332,6 +332,7 @@ async _getHistory(image, index) {
 		cv.width = width
 		cv.height = height
 		let c = cv.getContext('2d');
+		this.img.setAttribute('crossorigin', 'anonymous'); // CORS issue?
 		c.drawImage(this.img, 0, 0, width, height);
 		let i = await this.loadImage(this.canvas.toDataURL('image/png'));
 		c.drawImage(i, 0, 0);
