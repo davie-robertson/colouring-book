@@ -302,7 +302,7 @@ async _getHistory(image, index) {
 		windowContent += '<html>';
 		windowContent += '<head><title>Print Your Creation</title></head>';
 		windowContent += '<body>';
-		windowContent += '<img src="' + dataUrl + '" style="width:100%">';
+		windowContent += '<img src="' + dataUrl + '" style="width:100%" crossorigin="anonymous">';
 		windowContent += '</body>';
 		windowContent += '</html>';
 
@@ -335,6 +335,7 @@ async _getHistory(image, index) {
 		this.img.setAttribute('crossorigin', 'anonymous'); // CORS issue?
 		c.drawImage(this.img, 0, 0, width, height);
 		let i = await this.loadImage(this.canvas.toDataURL('image/png'));
+		i.setAttribute('crossorigin', 'anonymous'); // CORS issue?
 		c.drawImage(i, 0, 0);
 		return cv.toDataURL('image/png');
 	}
@@ -345,7 +346,7 @@ async _getHistory(image, index) {
 		save.download = "davie-worksheet.png";
 		document.body.appendChild(save);
 		save.click()
-		document.removeChild(save);
+		document.body.removeChild(save);
 	}
 	storeLocal() {
 		localStorage.setItem('davie:' + this.identity + this.selectedImage, JSON.stringify(this.paths));
