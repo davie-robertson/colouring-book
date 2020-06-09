@@ -557,6 +557,7 @@ async _getHistory(image, index) {
 							@click=${() => this.selectImage(image, index)}
 							@load=${() => this._getHistory(image, index)}
 							class="canvasBackgroundImage ${classMap({ selected: this.selectedImage == image })}"
+							crossorigin="anonymous"
 						>
 						<canvas class='thumbcanvas'
 							id='can-${index}'>
