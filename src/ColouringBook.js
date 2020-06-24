@@ -2,13 +2,11 @@ import { html, css, LitElement } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import '@material/mwc-icon-button';
-import '@material/mwc-icon-button-toggle';
 import {
 	printIcon,
 	clearIcon,
 	saveIcon,
 	undoIcon,
-	framed_mono_eraser,
 	framed_colour_eraser,
 	framed_colour_pen1,
 	framed_colour_pen2,
@@ -16,15 +14,11 @@ import {
 	framed_colour_pen4,
 } from './SvgIcons.js'
 
-
 export class ColouringBook extends LitElement {
 	static get styles() {
 		return css`
 
 	mwc-icon-button {
-  --mdc-icon-size: 48px; }
-
-	mwc-icon-button-toggle {
   --mdc-icon-size: 48px; }
 
     .wrapper { 
@@ -139,36 +133,18 @@ export class ColouringBook extends LitElement {
 	border: none;
 	padding: 0;
 	}
-	.form__question {
-		font-size: 25px;
-	}
-	.form__answer {
-		display: inline-block;
-		box-sizing: border-box;
-		vertical-align: top;
-	}
-	label {
+
+	.brush {
 		border: 1px solid rgba(#FAFAFA,.15);
 		cursor: pointer;
 		opacity: .45;
 		transition: all .5s ease-in-out;
 	}
-	/* Input style */
-	input[type="radio"] {
-		opacity: 0;
-		width: 0;
-		height: 0;
-	}
-	input[type="radio"]:active ~ label {
-	opacity: 1;
-	}
-
-	input[type="radio"]:checked ~ label {
-	opacity: 1;
-	}
+	.brush_active {
+		opacity: 1;
+		}
 	`;
 	}
-
 	static get properties() {
 		return {
 			images: { type: Array },
@@ -184,10 +160,8 @@ export class ColouringBook extends LitElement {
 			preview: { type: String }
 		};
 	}
-
 	constructor() {
 		super();
-		// this.loadIcons();
 		this.identity = 'anonymous'
 		this.onThumbnails = false
 		this.noSave = false
@@ -216,14 +190,11 @@ export class ColouringBook extends LitElement {
 		this.selectedImage = "";
 		this.preview = "";
 	}
-
 	firstUpdated() {
 		this.sizer = this.shadowRoot.getElementById('sizerTool');
 		this.wrapper = this.shadowRoot.getElementById('wrapper');
-
 		this.canvas = this.shadowRoot.getElementById('canvas');
 		this.ctx = this.canvas.getContext('2d');
-
 		this.activeCanvas = this.shadowRoot.getElementById('activeCanvas');
 		this.activeCtx = this.activeCanvas.getContext('2d');
 
@@ -237,35 +208,33 @@ export class ColouringBook extends LitElement {
 		this.colour = this.paletteColours[0]
 		this.setCursor()
 	}
-async _getHistory(image, index) {
-	 let x = await window.localStorage.getItem('davie:' + this.identity + this.selectedImage);
-	x ? this.paths = JSON.parse(x) : this.paths = [];
-		let canvasThumbCtx=this._getCTX(`can-${index}`);
-		let imageThumb=this.shadowRoot.getElementById(`img-${index}`)
+	async _getHistory(image, index) {
+		let x = await window.localStorage.getItem('davie:' + this.identity + this.selectedImage);
+		x ? this.paths = JSON.parse(x) : this.paths = [];
+		let canvasThumbCtx = this._getCTX(`can-${index}`);
+		let imageThumb = this.shadowRoot.getElementById(`img-${index}`)
 		let ratio = imageThumb.width / this.img.width
-		
-		await this.refresh(canvasThumbCtx, imageThumb,ratio )
-	
-}
-
+		await this.refresh(canvasThumbCtx, imageThumb, ratio)
+	}
 	_getCTX(image) {
 		return this.shadowRoot.getElementById(image).getContext('2d')
 	}
 	selectImage(sourceImg, index) {
+		
 		if (this.selectedImage !== sourceImg) {
 			this.selectedImage = sourceImg
+			debugger
 			this.img = this.shadowRoot.getElementById(`canvasImage`)
 			let event = new CustomEvent('image-selected', {
 				detail: {
-					image:this.selectedImage,	
+					image: this.selectedImage,
 				}
-			  });
-			  this.dispatchEvent(event);
+			});
+			this.dispatchEvent(event);
 			if (this.onThumbnails) {
 				this.canvasThumb = this.shadowRoot.getElementById(`can-${index}`)
 				this.canvasThumbCtx = this.canvasThumb.getContext('2d')
 				this.imageThumb = this.shadowRoot.getElementById(`img-${index}`)
-
 				this.canvasPos = this.canvas.getBoundingClientRect();
 				this.canvasThumb.height = this.imageThumb.naturalHeight;
 				this.canvasThumb.width = this.imageThumb.naturalWidth;
@@ -273,7 +242,6 @@ async _getHistory(image, index) {
 		}
 		// this.drawCanvas();
 	}
-
 	touchStart(oe) {
 		let e = oe.currentTarget;
 		let touch = oe.touches.item(0);
@@ -300,7 +268,7 @@ async _getHistory(image, index) {
 
 		let windowContent = '<!DOCTYPE html>';
 		windowContent += '<html>';
-		windowContent += '<head><title>Print Your Creation</title></head>';
+		windowContent += '<head><title>arabee</title></head>';
 		windowContent += '<body>';
 		windowContent += '<img src="' + dataUrl + '" style="width:100%" crossorigin="anonymous">';
 		windowContent += '</body>';
@@ -316,7 +284,7 @@ async _getHistory(image, index) {
 			printWin.close();
 		}, true);
 	}
-	loadImage(url) {
+	async loadImage(url) {
 		return new Promise(resolve => {
 			const image = new Image();
 			image.addEventListener('load', () => {
@@ -326,6 +294,7 @@ async _getHistory(image, index) {
 		});
 	}
 	async getImageData() {
+		
 		let height = this.img.naturalHeight;
 		let width = this.img.naturalWidth;
 		let cv = document.createElement('canvas')
@@ -337,13 +306,16 @@ async _getHistory(image, index) {
 		let i = await this.loadImage(this.canvas.toDataURL('image/png'));
 		i.setAttribute('crossorigin', 'anonymous'); // CORS issue?
 		c.drawImage(i, 0, 0);
+		debugger
+		console.log(cv.toDataURL().length)
 		return cv.toDataURL('image/png');
 	}
 	async save() {
 		let link = await this.getImageData();
+		
 		var save = document.createElement('a');
 		save.href = link;
-		save.download = "davie-worksheet.png";
+		save.download = "arabee-worksheet.png";
 		document.body.appendChild(save);
 		save.click()
 		document.body.removeChild(save);
@@ -362,17 +334,13 @@ async _getHistory(image, index) {
 			}
 		});
 		this.dispatchEvent(event);
-
 	}
 	undo() {
 		this.paths.pop();
 		this.storeLocal()
 		this.refresh(this.ctx, this.img);
 		let event = new CustomEvent('remove-path', {
-			detail: {
-				image: this.selectedImage,
-
-			}
+			detail: { image: this.selectedImage }
 		});
 		this.dispatchEvent(event);
 		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width / this.img.width) }
@@ -436,7 +404,6 @@ async _getHistory(image, index) {
 		let ratio = this.img.naturalWidth / this.img.width;
 		this._drawPath(ctx, path, ratio)
 	}
-
 	refresh(ctx, destinationImg, zoom = 1) {
 		this.clearActivePath()
 		let height = destinationImg.naturalHeight;
@@ -448,7 +415,6 @@ async _getHistory(image, index) {
 			this._drawPath(ctx, path, ratio)
 		})
 	}
-
 	_drawPath(ctx, path, ratio) {
 		if (!path[0].c) { path[0].c = this.paletteColours[0]; }
 		ctx.lineCap = 'round';
@@ -469,18 +435,17 @@ async _getHistory(image, index) {
 			ctx.lineTo(line.x, line.y))
 		ctx.stroke();
 	}
+	updateSize(size) {
 
-	updateSize(size = 8) {
 		if (size) {
-		this.brushSize = size
-		this._erase ? this._erase=false : null
-		
+			this.brushSize = size
+			if (this._erase) this._erase = false
 		} else {
-			this._erase=true
-		} 
+			this._erase = !this._erase
+		}
+
 		this.setCursor();
 	}
-
 	setCursor() {
 		let size = this.brushSize;
 		if (size < 2) size = 2;
@@ -506,8 +471,8 @@ async _getHistory(image, index) {
 		context.stroke();
 		let url = canvas.toDataURL();
 		this.wrapper.style.cursor = `url(${url}) 16 16, pointer`;
+		this.requestUpdate();
 	}
-
 	_imageChanged() {
 		this.sizeCanvas();
 		// this.canvasThumb = this.shadowRoot
@@ -515,25 +480,22 @@ async _getHistory(image, index) {
 		x ? this.paths = JSON.parse(x) : this.paths = [];
 		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width / this.img.width) }
 		this.refresh(this.ctx, this.img);
-
 	}
-
 	selectColour(e) {
 		this.colour = e.currentTarget.dataset.colour
+		if (this._erase) this._erase = false
 		this.setCursor()
 	}
-
-	toggleErase(e) {
-		if (this._erase) {
-			this.colour = this._oldCol
-		} else {
-			this._oldCol = this.colour
-			this.colour = 'none'
-		}
-		this._erase = e.detail.isOn;
-		this.setCursor()
-	}
-
+	// toggleErase(e) {
+	// 	if (this._erase) {
+	// 		this.colour = this._oldCol
+	// 	} else {
+	// 		this._oldCol = this.colour
+	// 		this.colour = 'none'
+	// 	}
+	// 	this._erase = e.detail.isOn;
+	// 	this.setCursor()
+	// }
 	sizeCanvas() {
 		this.canvasPos = this.canvas.getBoundingClientRect();
 		this.canvas.height = this.img.naturalHeight;
@@ -541,16 +503,14 @@ async _getHistory(image, index) {
 		this.activeCanvas.height = this.img.naturalHeight;
 		this.activeCanvas.width = this.img.naturalWidth;
 	}
-
-
 	render() {
 		return html`
-		<div id='wrapper' class="wrapper ${ this.preview === 'right' ? 'previewRight' : '' }">
+		<div id='wrapper' class="wrapper ${classMap({ previewRight: this.preview === 'right' })}">
 			<!-- child -->
 			<div class="imageNav">
 				${
-				this.images.map((image, index) =>
-					html`
+			this.images.map((image, index) =>
+				html`
 					<div class='muppet' @click=${() => this.selectImage(image, index)}>
 						<img src='${image}'
 							id='img-${index}'	
@@ -564,70 +524,39 @@ async _getHistory(image, index) {
 						</canvas>  
 					</div>
 				`)
-				}
+			}
 			</div>
 			<!-- child -->
 			<div class="toolbar">
 				<div class="tools">
-				<p class="form__answer">
-						<input type="radio" name="match" id="match_1" value="2" >
-						<label for="match_1" @click=${() => this.updateSize(2)}>
-							${framed_colour_pen1}					
-						</label></p>
-				<p class="form__answer"> 
-						<input type="radio" name="match" id="match_2" value="8" checked> 
-						<label for="match_2" @click=${() => this.updateSize(8)}>
-							${framed_colour_pen2}					
-						</label></p>		
-				<p class="form__answer"> 
-						<input type="radio" name="match" id="match_3" value="16" > 
-						<label for="match_3" @click=${() => this.updateSize(16)}>
-							${framed_colour_pen3}					
-						</label></p>
-				<p class="form__answer"> 
-						<input type="radio" name="match" id="match_4" value="32" > 
-						<label for="match_4" @click=${() => this.updateSize(32)}>
-							${framed_colour_pen4}					
-						</label></p>
-				<p class="form__answer"> 
-						<input type="radio" name="match" id="match_5" value="0" > 
-						<label for="match_5" @click=${() => this.updateSize(0)}>
-							${framed_colour_eraser}					
-						</label></p>
+					<div class='brush ${classMap({ brush_active: this.brushSize == 2 })}' @click=${() => this.updateSize(2)}>${framed_colour_pen1}</div>
+					<div class='brush ${classMap({ brush_active: this.brushSize == 8 })}' @click=${() => this.updateSize(8)}>${framed_colour_pen2}</div>
+					<div class='brush ${classMap({ brush_active: this.brushSize == 16 })}' @click=${() => this.updateSize(16)}>${framed_colour_pen3}</div>
+					<div class='brush ${classMap({ brush_active: this.brushSize == 32 })}' @click=${() => this.updateSize(32)}>${framed_colour_pen4}</div>
+					<div class='brush ${classMap({ brush_active: this._erase })}' @click=${() => this.updateSize(0)}>${framed_colour_eraser}</div>
 
-
-				<!-- <mwc-icon-button-toggle id='eraser' @MDCIconButtonToggle:change=${(e) => this.toggleErase(e)}>
-				${framed_colour_eraser}
-				${framed_mono_eraser}
-				</mwc-icon-button-toggle> -->
-
-
-				<div class="spacer"><i>use two fingers to scroll</i></div>
-				<mwc-icon-button @click=${this.undo}>${undoIcon}</mwc-icon-button>
-				<mwc-icon-button @click=${this.clear}>${clearIcon}</mwc-icon-button>
-				
-				${!this.noPrint ? html`
-				<mwc-icon-button @click=${this.print}>${printIcon}</mwc-icon-button>
-				`
-						:
-						html``
-					}
-				${!this.noSave ? html`
-				<mwc-icon-button @click=${this.save}>${saveIcon}</mwc-icon-button>
-				`
-						:
-						html``
-					}
+					<div class="spacer"><i>use two fingers to scroll</i></div>
+					<mwc-icon-button @click=${this.undo}>${undoIcon}</mwc-icon-button>
+					<mwc-icon-button @click=${this.clear}>${clearIcon}</mwc-icon-button>
+			
+					${!this.noPrint ? html`<mwc-icon-button @click=${() => this.print()}>${printIcon}</mwc-icon-button>`
+				:
+				html``
+			}
+					${!this.noSave ? html`<mwc-icon-button @click=${() => this.save()}>${saveIcon}</mwc-icon-button>`
+				:
+				html``
+			}
 
 				</div>
 				<div class="palette">
 					${this.paletteColours.map((col, index) => (html`
 						<div class='paletteColour ${classMap({ selected: this.colour == col })}'
-						style='${styleMap({ backgroundColor: col })}' data-colour='${col}' data-debug="${this.colour} ${col}"
+						style='${styleMap({ backgroundColor: col })}' data-colour='${col}' 
 						@click=${(e) => this.selectColour(e)}>
 						</div>
 					`
-				))}
+			))}
               </div>
             </div>
 			<!-- child -->
