@@ -223,7 +223,6 @@ export class ColouringBook extends LitElement {
 		
 		if (this.selectedImage !== sourceImg) {
 			this.selectedImage = sourceImg
-			debugger
 			this.img = this.shadowRoot.getElementById(`canvasImage`)
 			let event = new CustomEvent('image-selected', {
 				detail: {
@@ -284,13 +283,13 @@ export class ColouringBook extends LitElement {
 			printWin.close();
 		}, true);
 	}
-	async loadImage(url) {
-		return new Promise(resolve => {
-			const image = new Image();
-			image.addEventListener('load', () => {
-				resolve(image);
-			});
-			image.src = url;
+	loadImage(url) {
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			img.crossOrigin='anonymous'
+			img.addEventListener('load', () => resolve(img));
+			img.addEventListener('error', reject); 
+			img.src = url;
 		});
 	}
 	async getImageData() {
@@ -301,13 +300,11 @@ export class ColouringBook extends LitElement {
 		cv.width = width
 		cv.height = height
 		let c = cv.getContext('2d');
-		this.img.setAttribute('crossorigin', 'anonymous'); // CORS issue?
-		c.drawImage(this.img, 0, 0, width, height);
+		this.img.crossOrigin='anonymous'; // CORS issue?
+		c.drawImage(await this.loadImage(this.img.src), 0, 0, width, height);
 		let i = await this.loadImage(this.canvas.toDataURL('image/png'));
-		i.setAttribute('crossorigin', 'anonymous'); // CORS issue?
+		i.crossOrigin='anonymous'; // CORS issue?
 		c.drawImage(i, 0, 0);
-		debugger
-		console.log(cv.toDataURL().length)
 		return cv.toDataURL('image/png');
 	}
 	async save() {
