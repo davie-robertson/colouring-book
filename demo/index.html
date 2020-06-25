@@ -34,17 +34,18 @@
             'white'];
     render(
       html`
+      <h1>First Example</h1>
         <colouring-book .images=${img} .colourPalette=${paletteColours} .maxBrushSize="64" onThumbnails> 
         </colouring-book>
 
-
+      <h1>Second Example</h1>
+        <colouring-book  .images=${img} preview="right" .colourPalette=${paletteColours} .maxBrushSize="64" onThumbnails> 
+        </colouring-book>
       `,
       document.querySelector('#demo')
     );
   </script>
-<!-- 
-<colouring-book  .images=${img} preview="right" .colourPalette=${paletteColours} .maxBrushSize="64" onThumbnails> 
-</colouring-book> -->
+
 
 </body>
 </html>
