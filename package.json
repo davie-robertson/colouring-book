@@ -1,8 +1,8 @@
 {
-  "name": "@arabee/colouring-book",
+  "name": "@davie-robertson/colouring-book",
   "version": "0.0.15",
   "description": "Webcomponent colouring-book to paint on images with print, save & undo",
-  "author": "David Robertson Esq",
+  "author": "David Robertson",
   "license": "MIT",
   "main": "index.js",
   "module": "index.js",
