@@ -58,6 +58,10 @@
       "git add"
     ]
   },
+  "repository" : {
+    "type" : "git",
+    "url": "ssh://git@github.com/davie-robertson/colouring-book.git"
+  },
   "publishConfig": { "registry": "https://npm.pkg.github.com/" }
 
 }
