@@ -337,20 +337,6 @@ export class ColouringBook extends LitElement {
 
 	async _getHistory(image, index) {
 		let x = await window.localStorage.getItem('davie:' + this.identity + this.selectedImage);
-	   x ? this.paths = JSON.parse(x) : this.paths = [];
-		   let canvasThumbCtx=this._getCTX(`can-${index}`);
-		   let imageThumb=this.shadowRoot.getElementById(`img-${index}`)
-		   let ratio = imageThumb.width / this.img.width
-		   
-		   await this.refresh(canvasThumbCtx, imageThumb,ratio )
-	   
-   	}
-   
-	_getCTX(image) {
-	   return this.shadowRoot.getElementById(image).getContext('2d')
-	}
-	async _getHistory(image, index) {
-		let x = await window.localStorage.getItem('davie:' + this.identity + this.selectedImage);
 		x ? this.paths = JSON.parse(x) : this.paths = [];
 		let canvasThumbCtx = this._getCTX(`can-${index}`);
 		let imageThumb = this.shadowRoot.getElementById(`img-${index}`)
