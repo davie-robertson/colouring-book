@@ -12,6 +12,7 @@ import {
 	framed_colour_pen2,
 	framed_colour_pen3,
 	framed_colour_pen4,
+	burgerMenu,
 } from './SvgIcons.js'
 
 export class ColouringBook extends LitElement {
@@ -142,7 +143,122 @@ export class ColouringBook extends LitElement {
 	}
 	.brush_active {
 		opacity: 1;
+	}
+
+	.menu-button {
+		display: none;
+		position: fixed;
+		top: 6px;
+		left: 6px;
+		background: #fff;
+		border-radius: 6px;
+		box-shadow: 0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);
+		z-index: 100001;
+		transform: scale(0.75);
+	}
+	.menu-button svg {
+		width: 32px;
+		height: 32px;
+		margin: auto;
+	}
+
+	/* styles for UI with the burger menu, including the media queries. All the selectors start with .toolbar_collapsible except for menu-button  */
+	.toolbar_collapsible {
+		text-align: left;
+	}	
+	.toolbar_collapsible .palette {
+		margin-left: 16px;
+	}	
+	.toolbar_collapsible .spacer {
+		font-size: 16px;
+		text-align: center;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	@media (width: 768px) and (height: 1024px) {
+		.tools {
+			justify-content: space-between;
 		}
+		.toolbar_collapsible .spacer {
+			order: 1;
+			white-space: nowrap;
+			margin-top: 0;
+		}
+	}
+	@media (max-height: 512px) and (max-width: 840px) and (orientation: landscape),
+		(max-width: 512px) and (max-height: 840px) and (orientation: portrait) {
+		.menu-button {
+			display: block;
+		}
+		.toolbar_collapsible {
+			display: none;
+		}
+		.toolbar_collapsible .tools {
+			padding-left: 48px;
+			justify-content: space-between;
+		}
+		.toolbar_collapsible .palette {
+			padding-left: 36px;
+			margin-top: 10px;
+		}
+		.toolbar_collapsible .tools > * {
+			transform: scale(.75);
+			margin: 6px 3px 0;
+		}
+		.toolbar_collapsible mwc-icon-button {
+			margin-left: 4px;
+			margin-right: 4px;
+		}
+		.toolbar_collapsible .spacer {
+			margin: 0;
+		}
+		.toolbar_collapsible .spacer i {
+			line-height: 3.2;
+		}
+	}
+	@media (max-height: 512px) and (max-width: 774px) and (orientation: landscape) {
+		.toolbar_collapsible .spacer {
+			text-align: center;
+			order: 1;
+			white-space: nowrap;
+			margin-bottom: -4px;
+		}		
+		.toolbar_collapsible .spacer i {
+			line-height: unset;
+		}
+	}
+	@media (max-width: 610px) and (orientation: landscape) {
+		.toolbar_collapsible .tools > * {
+			margin-left: 0;
+			margin-right: 0;
+		}
+	}
+	@media (max-width: 512px) and (max-height: 840px) and (orientation: portrait) {
+		.toolbar_collapsible .spacer {
+			order: 1;
+			white-space: nowrap;
+		}
+		.toolbar_collapsible .spacer i {
+			line-height: unset;
+		}
+	}
+	@media (max-width: 580px) and (orientation: landscape) {
+		.paletteColour {
+			height: 25px;
+			width: 25px;
+		}
+	}
+	@media (max-width: 520px) and (orientation: portrait) {
+		.toolbar_collapsible .tools {
+			justify-content: flex-start;
+		}
+		.toolbar_collapsible .tools > * {
+			margin-left: 0;
+			margin-right: 0;
+		}
+	}
 	`;
 	}
 	static get properties() {
@@ -157,7 +273,10 @@ export class ColouringBook extends LitElement {
 			noSave: { type: Boolean },
 			identity: { type: String },
 			_erase: { type: Boolean },
-			preview: { type: String }
+			preview: { type: String },
+			collapseMenuMobile: {type: Boolean},
+			menuShown: {type: Boolean},
+			toolsRightOffset: {type: String}
 		};
 	}
 	constructor() {
@@ -189,6 +308,9 @@ export class ColouringBook extends LitElement {
 		this.paths = [];
 		this.selectedImage = "";
 		this.preview = "";
+		this.collapseMenuMobile = false;
+		this.menuShown = false;
+		this.toolsRightOffset = 0;
 	}
 	firstUpdated() {
 		this.sizer = this.shadowRoot.getElementById('sizerTool');
@@ -207,7 +329,12 @@ export class ColouringBook extends LitElement {
 
 		this.colour = this.paletteColours[0]
 		this.setCursor()
+
+		this.collapseMenuMobile === true ? this.showCollapseMenuMobile() : '';
+
+		this.toolsRightOffset >= 0 ? this.offsetToolsToRight() : '';
 	}
+
 	async _getHistory(image, index) {
 		let x = await window.localStorage.getItem('davie:' + this.identity + this.selectedImage);
 		x ? this.paths = JSON.parse(x) : this.paths = [];
@@ -219,6 +346,7 @@ export class ColouringBook extends LitElement {
 	_getCTX(image) {
 		return this.shadowRoot.getElementById(image).getContext('2d')
 	}
+
 	selectImage(sourceImg, index) {
 		
 		if (this.selectedImage !== sourceImg) {
@@ -500,6 +628,26 @@ export class ColouringBook extends LitElement {
 		this.activeCanvas.height = this.img.naturalHeight;
 		this.activeCanvas.width = this.img.naturalWidth;
 	}
+
+	showCollapseMenuMobile() {
+		this.shadowRoot.querySelector('.toolbar').classList.add('toolbar_collapsible');
+	}
+	
+	offsetToolsToRight() {
+		console.log(typeof(this.toolsRightOffset), typeof(Number('48')))
+		this.shadowRoot.querySelector('.tools').style.marginRight = this.toolsRightOffset+'px';
+	}
+
+	toggleMenu(e) {
+		if (this.menuShown) {
+			this.shadowRoot.querySelector('.toolbar').style.display = '';
+			this.menuShown = false;
+		} else {
+			this.shadowRoot.querySelector('.toolbar').style.display = 'block';
+			this.menuShown = true;
+		}
+	}
+
 	render() {
 		return html`
 		<div id='wrapper' class="wrapper ${classMap({ previewRight: this.preview === 'right' })}">
@@ -524,6 +672,11 @@ export class ColouringBook extends LitElement {
 			}
 			</div>
 			<!-- child -->
+			${this.collapseMenuMobile ? html`
+				<mwc-icon-button class="menu-button" @click=${() => this.toggleMenu()}>${burgerMenu}</mwc-icon-button>`
+				:
+				html``
+			}
 			<div class="toolbar">
 				<div class="tools">
 					<div class='brush ${classMap({ brush_active: this.brushSize == 2 })}' @click=${() => this.updateSize(2)}>${framed_colour_pen1}</div>
