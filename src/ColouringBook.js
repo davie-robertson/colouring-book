@@ -276,7 +276,9 @@ export class ColouringBook extends LitElement {
 			preview: { type: String },
 			collapseMenuMobile: {type: Boolean},
 			menuShown: {type: Boolean},
-			toolsRightOffset: {type: String}
+			toolsRightOffset: {type: String},
+			flutterApp: {type: Boolean},
+
 		};
 	}
 	constructor() {
@@ -311,6 +313,7 @@ export class ColouringBook extends LitElement {
 		this.collapseMenuMobile = false;
 		this.menuShown = false;
 		this.toolsRightOffset = 0;
+		this.flutterApp= false ;
 	}
 	firstUpdated() {
 		this.sizer = this.shadowRoot.getElementById('sizerTool');
@@ -392,7 +395,22 @@ export class ColouringBook extends LitElement {
 	}
 	async print() {
 		const dataUrl = await this.getImageData();
-
+		if (this.flutterApp === true)
+		{
+			// event to download worksheet
+			this.dispatchEvent(
+				new CustomEvent('print-worksheet', {
+				detail: {
+					isDownloading:true,
+					link:dataUrl
+				},
+				bubbles: true,
+				composed: true,
+		})
+	  );
+		}
+		else 
+	{
 		let windowContent = '<!DOCTYPE html>';
 		windowContent += '<html>';
 		windowContent += '<head><title>arabee</title></head>';
@@ -409,7 +427,7 @@ export class ColouringBook extends LitElement {
 			printWin.print();
 			printWin.document.close();
 			printWin.close();
-		}, true);
+		}, true);}
 	}
 	loadImage(url) {
 		return new Promise((resolve, reject) => {
@@ -437,13 +455,27 @@ export class ColouringBook extends LitElement {
 	}
 	async save() {
 		let link = await this.getImageData();
-		
-		var save = document.createElement('a');
+		if (this.flutterApp === true)
+		{
+			// event to download worksheet
+			this.dispatchEvent(
+				new CustomEvent('download-worksheet', {
+				detail: {
+					isDownloading:true,
+					link
+				},
+				bubbles: true,
+				composed: true,
+		})
+	  );
+		}
+		else
+		{var save = document.createElement('a');
 		save.href = link;
 		save.download = "arabee-worksheet.png";
 		document.body.appendChild(save);
 		save.click()
-		document.body.removeChild(save);
+		document.body.removeChild(save);}
 	}
 	storeLocal() {
 		localStorage.setItem('davie:' + this.identity + this.selectedImage, JSON.stringify(this.paths));
@@ -634,7 +666,6 @@ export class ColouringBook extends LitElement {
 	}
 	
 	offsetToolsToRight() {
-		console.log(typeof(this.toolsRightOffset), typeof(Number('48')))
 		this.shadowRoot.querySelector('.tools').style.marginRight = this.toolsRightOffset+'px';
 	}
 
