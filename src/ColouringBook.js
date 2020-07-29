@@ -392,7 +392,17 @@ export class ColouringBook extends LitElement {
 	}
 	async print() {
 		const dataUrl = await this.getImageData();
-
+    // event to print worksheet
+    this.dispatchEvent(
+			new CustomEvent('print-worksheet', {
+			  detail: {
+				isDownloading:true,
+				link:dataUrl
+			  },
+			  bubbles: true,
+			  composed: true,
+			})
+		  );
 		let windowContent = '<!DOCTYPE html>';
 		windowContent += '<html>';
 		windowContent += '<head><title>arabee</title></head>';
@@ -444,6 +454,17 @@ export class ColouringBook extends LitElement {
 		document.body.appendChild(save);
 		save.click()
 		document.body.removeChild(save);
+    // event to download worksheet
+    this.dispatchEvent(
+			new CustomEvent('download-worksheet', {
+			  detail: {
+				isDownloading:true,
+				link
+			  },
+			  bubbles: true,
+			  composed: true,
+			})
+		  );
 	}
 	storeLocal() {
 		localStorage.setItem('davie:' + this.identity + this.selectedImage, JSON.stringify(this.paths));
