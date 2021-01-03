@@ -1,5 +1,5 @@
 {
-  "name": "colouring-book",
+  "name": "@davie-robertson/colouring-book",
   "version": "0.0.17",
   "description": "Webcomponent colouring-book to paint on images with print, save & undo",
   "author": "David Robertson",

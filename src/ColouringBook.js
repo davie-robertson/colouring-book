@@ -7,6 +7,7 @@ import {
 	clearIcon,
 	saveIcon,
 	undoIcon,
+	narrativeIcon,
 	framed_colour_eraser,
 	framed_colour_pen1,
 	framed_colour_pen2,
@@ -52,8 +53,7 @@ export class ColouringBook extends LitElement {
 	.wrapper.previewRight .toolbar {
 		width: 100%;
 	}
-    /*default theme*/
-	.imageNav {
+    .imageNav {
 		direction: rtl;
 		display:flex;
 	}
@@ -75,6 +75,13 @@ export class ColouringBook extends LitElement {
         border:3px solid transparent;
         width:12%; min-width:75px; max-width:150px;
         margin:4px;
+	}
+	.playbutton {
+		position: absolute;
+		left: 20px;
+		top: 100px;
+		z-index:2000;
+
 	}
     .toolbar {
         z-index:100000;
@@ -126,7 +133,8 @@ export class ColouringBook extends LitElement {
     .activeCanvas {
         z-index:1001;
         position:absolute;
-        top:0;left:0;
+        top:0;
+		left:0;
         width:100%;
     }
     .canvasBackgroundImage{width:100%}
@@ -278,6 +286,8 @@ export class ColouringBook extends LitElement {
 			menuShown: {type: Boolean},
 			toolsRightOffset: {type: String},
 			flutterApp: {type: Boolean},
+			narrative: {type: String},
+			inactive: {type: Boolean},
 		};
 	}
 	constructor() {
@@ -313,6 +323,8 @@ export class ColouringBook extends LitElement {
 		this.menuShown = false;
 		this.toolsRightOffset = 0;
 		this.flutterApp= false;
+		this.narrative="";
+		this.inactive=false;
 	}
 	firstUpdated() {
 		this.sizer = this.shadowRoot.getElementById('sizerTool');
@@ -402,6 +414,7 @@ export class ColouringBook extends LitElement {
 		// this.drawCanvas();
 	}
 	touchStart(oe) {
+		if (this.inactive) return
 		let e = oe.currentTarget;
 		let touch = oe.touches.item(0);
 		e.clientX = touch.clientX;
@@ -409,12 +422,14 @@ export class ColouringBook extends LitElement {
 		this.mouseDown(e)
 	}
 	touchEnd(oe) {
+		if (this.inactive) return
+
 		let e = oe.currentTarget;
 		this.mouseUp(e);
 	}
 	touchMove(oe) {
 		let e = oe.currentTarget;
-		if (oe.targetTouches.length >= 2) return true; // allow 2 finger gestures through
+		if (oe.targetTouches.length >= 2 ||  this.inactive) return true; // allow 2 finger gestures through
 		oe.preventDefault();
 		oe.stopPropagation();
 		let touch = oe.touches[0];
@@ -538,6 +553,8 @@ export class ColouringBook extends LitElement {
 		};
 	}
 	mouseDown(e) {
+		if (this.inactive) return
+
 		let pos = this.getCursorPosition(e);
 		this.dragging = true;
 		this._erase ? pos.c = 'erase' : pos.c = this.colour;
@@ -546,11 +563,15 @@ export class ColouringBook extends LitElement {
 		this.setCursor();
 	}
 	mouseUp(e) {
+		if (this.inactive) return
+
 		this.commitActivePath();
 		if (this.dragging) this.storeLocal();
 		this.dragging = false;
 	}
 	mouseMove(e) {
+		if (this.inactive) return
+
 		let pos;
 		if (!this.dragging) return;
 		pos = this.getCursorPosition(e);
@@ -632,6 +653,8 @@ export class ColouringBook extends LitElement {
 		this.setCursor();
 	}
 	setCursor() {
+		if (this.inactive) return
+
 		let size = this.brushSize;
 		if (size < 2) size = 2;
 		if (size > 32) size = 32;
@@ -671,16 +694,7 @@ export class ColouringBook extends LitElement {
 		if (this._erase) this._erase = false
 		this.setCursor()
 	}
-	// toggleErase(e) {
-	// 	if (this._erase) {
-	// 		this.colour = this._oldCol
-	// 	} else {
-	// 		this._oldCol = this.colour
-	// 		this.colour = 'none'
-	// 	}
-	// 	this._erase = e.detail.isOn;
-	// 	this.setCursor()
-	// }
+
 	sizeCanvas() {
 		this.canvasPos = this.canvas.getBoundingClientRect();
 		this.canvas.height = this.img.naturalHeight;
@@ -706,6 +720,11 @@ export class ColouringBook extends LitElement {
 			this.menuShown = true;
 		}
 	}
+	_narrative() {
+		const player=this.shadowRoot.getElementById('player')
+		player.style.display='block';
+		player.play()
+	}
 
 	render() {
 		return html`
@@ -723,9 +742,7 @@ export class ColouringBook extends LitElement {
 							class="canvasBackgroundImage ${classMap({ selected: this.selectedImage == image })}"
 							crossorigin="anonymous"
 						>
-						<canvas class='thumbcanvas'
-							id='can-${index}'>
-						</canvas>  
+						<canvas class='thumbcanvas' id='can-${index}'></canvas>  
 					</div>
 				`)
 			}
@@ -738,36 +755,40 @@ export class ColouringBook extends LitElement {
 			}
 			<div class="toolbar">
 				<div class="tools">
-					<div class='brush ${classMap({ brush_active: this.brushSize == 2 })}' @click=${() => this.updateSize(2)}>${framed_colour_pen1}</div>
-					<div class='brush ${classMap({ brush_active: this.brushSize == 8 })}' @click=${() => this.updateSize(8)}>${framed_colour_pen2}</div>
-					<div class='brush ${classMap({ brush_active: this.brushSize == 16 })}' @click=${() => this.updateSize(16)}>${framed_colour_pen3}</div>
-					<div class='brush ${classMap({ brush_active: this.brushSize == 32 })}' @click=${() => this.updateSize(32)}>${framed_colour_pen4}</div>
-					<div class='brush ${classMap({ brush_active: this._erase })}' @click=${() => this.updateSize(0)}>${framed_colour_eraser}</div>
+					${this.inactive ? html `` :
+					html `
+						<div class='brush ${classMap({ brush_active: this.brushSize == 2 })}' @click=${() => this.updateSize(2)}>${framed_colour_pen1}</div>
+						<div class='brush ${classMap({ brush_active: this.brushSize == 8 })}' @click=${() => this.updateSize(8)}>${framed_colour_pen2}</div>
+						<div class='brush ${classMap({ brush_active: this.brushSize == 16 })}' @click=${() => this.updateSize(16)}>${framed_colour_pen3}</div>
+						<div class='brush ${classMap({ brush_active: this.brushSize == 32 })}' @click=${() => this.updateSize(32)}>${framed_colour_pen4}</div>
+						<div class='brush ${classMap({ brush_active: this._erase })}' @click=${() => this.updateSize(0)}>${framed_colour_eraser}</div>
+						<div class="spacer"><i>use two fingers to scroll</i></div>
+					`}
+					${this.narrative.length ? html`<audio id='player' style="display:none;" preload=auto controls src=${this.narrative}>Your browser does not support the <code>audio</code> element.</audio>` : html``}
 
-					<div class="spacer"><i>use two fingers to scroll</i></div>
+					${this.inactive ? html `` :
+					html `
 					<mwc-icon-button @click=${this.undo}>${undoIcon}</mwc-icon-button>
 					<mwc-icon-button @click=${this.clear}>${clearIcon}</mwc-icon-button>
 			
-					${!this.noPrint ? html`<mwc-icon-button @click=${() => this.print()}>${printIcon}</mwc-icon-button>`
-				:
-				html``
-			}
-					${!this.noSave ? html`<mwc-icon-button @click=${() => this.save()}>${saveIcon}</mwc-icon-button>`
-				:
-				html``
-			}
-
+					${!this.noPrint ? html`<mwc-icon-button @click=${() => this.print()}>${printIcon}</mwc-icon-button>` : html``}
+					${!this.noSave ? html`<mwc-icon-button @click=${() => this.save()}>${saveIcon}</mwc-icon-button>` : html``}
+					`}
 				</div>
 				<div class="palette">
+				${this.inactive ? html `` :
+					html `
 					${this.paletteColours.map((col, index) => (html`
 						<div class='paletteColour ${classMap({ selected: this.colour == col })}'
-						style='${styleMap({ backgroundColor: col })}' data-colour='${col}' 
+						style=${styleMap({ backgroundColor: col })}
+						data-colour=${col} 
 						@click=${(e) => this.selectColour(e)}>
 						</div>
-					`
-			))}
+					`))}
+				`}
               </div>
-            </div>
+			</div>
+
 			<!-- child -->
             <div class="canvasWrapper">
               <img
@@ -775,8 +796,13 @@ export class ColouringBook extends LitElement {
                 class="canvasBackgroundImage"
                 src=${this.selectedImage}
                 @load=${this._imageChanged}
-              />
-              <canvas id="canvas" class="canvas"></canvas>
+			  />
+			  ${this.inactive ? html `<div @click=${()=>this._narrative()} class='playbutton'>${narrativeIcon}</div>`
+			   :
+				html ``}
+			
+			
+			<canvas id="canvas" class="canvas"></canvas>
               <canvas
                 id="activeCanvas"
                 class="activeCanvas"

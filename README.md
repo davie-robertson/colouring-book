@@ -18,8 +18,10 @@ npm i colouring-book
 | `colourPalette` | `Array` | see example | An array of colours (in html/css format) that can be selected by the user - defaults to first colour.
 | `noPrint` | `Boolean` | `false` | Restricts the user from printing pages with their colouring in.
 | `noSave` | `Boolean` | `false` | Restricts the user from saving pages locally as `.png` files.
-| `noThumbnails` | `Boolean` | `false` | Applies the colouring in to the thumbnail images of each page.
+| `onThumbnails` | `Boolean` | `false` | Overlayhs drawing onto the thumbnail image of each page.
 | `preview` | `String` | `''` | When set to `right` the thumbnails will appear on the right of the `image`, default is above images.
+| `inactive` | `Boolean` | `'false'` | When set to `true` the component does not allow an interaction with the `image`.
+| `narrative` | `String` | `''` | When a `URL` is provided the UI will overlay a media play button on the first `image`, this can be used by teachers to give a narrative to a worksheet.
 
 ### Events
 | Event Name | Target       | Detail             | Description
