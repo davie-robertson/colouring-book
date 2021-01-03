@@ -276,7 +276,8 @@ export class ColouringBook extends LitElement {
 			preview: { type: String },
 			collapseMenuMobile: {type: Boolean},
 			menuShown: {type: Boolean},
-			toolsRightOffset: {type: String}
+			toolsRightOffset: {type: String},
+			flutterApp: {type: Boolean},
 		};
 	}
 	constructor() {
@@ -311,6 +312,7 @@ export class ColouringBook extends LitElement {
 		this.collapseMenuMobile = false;
 		this.menuShown = false;
 		this.toolsRightOffset = 0;
+		this.flutterApp= false;
 	}
 	firstUpdated() {
 		this.sizer = this.shadowRoot.getElementById('sizerTool');
@@ -333,6 +335,33 @@ export class ColouringBook extends LitElement {
 		this.collapseMenuMobile === true ? this.showCollapseMenuMobile() : '';
 
 		this.toolsRightOffset >= 0 ? this.offsetToolsToRight() : '';
+		this._onFirstUpdatedCustomEvent();
+	}
+
+	async _getAllPathHistoryByImage(images) {
+		let pathHistory = [];
+		if(images && images.length != 0) {
+			pathHistory = await images.map((image) => {
+				const lines = window.localStorage.getItem('davie:' + this.identity + image);
+				return lines ? JSON.parse(lines) : [];
+			});
+		}
+
+		return pathHistory;
+	}
+
+	async _onFirstUpdatedCustomEvent() {
+		if (this.flutterApp === true) {
+			let pathHistory = await this._getAllPathHistoryByImage(this.images);
+			this.dispatchEvent(new CustomEvent('on-first-updated', {
+				detail: {
+					images: this.images,
+					pathHistory: pathHistory
+				},
+				bubbles: true,
+				composed: true,
+			}));
+		}
 	}
 
 	async _getHistory(image, index) {
@@ -348,14 +377,17 @@ export class ColouringBook extends LitElement {
 	}
 
 	selectImage(sourceImg, index) {
-		
+
 		if (this.selectedImage !== sourceImg) {
 			this.selectedImage = sourceImg
 			this.img = this.shadowRoot.getElementById(`canvasImage`)
 			let event = new CustomEvent('image-selected', {
 				detail: {
 					image: this.selectedImage,
-				}
+					index: index
+				},
+				bubbles: true,
+				composed: true,
 			});
 			this.dispatchEvent(event);
 			if (this.onThumbnails) {
@@ -392,24 +424,35 @@ export class ColouringBook extends LitElement {
 	}
 	async print() {
 		const dataUrl = await this.getImageData();
+		if (this.flutterApp === true) {
+			// event to download worksheet
+			this.dispatchEvent(new CustomEvent('print-worksheet', {
+				detail: {
+					isDownloading:true,
+					link:dataUrl
+				},
+				bubbles: true,
+				composed: true,
+			}));
+		} else {
+			let windowContent = '<!DOCTYPE html>';
+			windowContent += '<html>';
+			windowContent += '<head><title>arabee</title></head>';
+			windowContent += '<body>';
+			windowContent += '<img src="' + dataUrl + '" style="width:100%" crossorigin="anonymous">';
+			windowContent += '</body>';
+			windowContent += '</html>';
 
-		let windowContent = '<!DOCTYPE html>';
-		windowContent += '<html>';
-		windowContent += '<head><title>arabee</title></head>';
-		windowContent += '<body>';
-		windowContent += '<img src="' + dataUrl + '" style="width:100%" crossorigin="anonymous">';
-		windowContent += '</body>';
-		windowContent += '</html>';
-
-		const printWin = window.open('', '', 'width=' + screen.availWidth + ',height=' + screen.availHeight);
-		printWin.document.open();
-		printWin.document.write(windowContent);
-		printWin.document.addEventListener('load', function () {
-			printWin.focus();
-			printWin.print();
-			printWin.document.close();
-			printWin.close();
-		}, true);
+			const printWin = window.open('', '', 'width=' + screen.availWidth + ',height=' + screen.availHeight);
+			printWin.document.open();
+			printWin.document.write(windowContent);
+			printWin.document.addEventListener('load', function () {
+				printWin.focus();
+				printWin.print();
+				printWin.document.close();
+				printWin.close();
+			}, true);
+		}
 	}
 	loadImage(url) {
 		return new Promise((resolve, reject) => {
@@ -437,13 +480,24 @@ export class ColouringBook extends LitElement {
 	}
 	async save() {
 		let link = await this.getImageData();
-		
-		var save = document.createElement('a');
-		save.href = link;
-		save.download = "arabee-worksheet.png";
-		document.body.appendChild(save);
-		save.click()
-		document.body.removeChild(save);
+		if (this.flutterApp === true) {
+			// event to download worksheet
+			this.dispatchEvent(new CustomEvent('download-worksheet', {
+				detail: {
+					isDownloading:true,
+					link
+				},
+				bubbles: true,
+				composed: true,
+			}));
+		} else {
+			var save = document.createElement('a');
+			save.href = link;
+			save.download = "arabee-worksheet.png";
+			document.body.appendChild(save);
+			save.click()
+			document.body.removeChild(save);
+		}
 	}
 	storeLocal() {
 		localStorage.setItem('davie:' + this.identity + this.selectedImage, JSON.stringify(this.paths));
@@ -456,7 +510,9 @@ export class ColouringBook extends LitElement {
 		let event = new CustomEvent('clear-paths', {
 			detail: {
 				image: this.selectedImage,
-			}
+			},
+			bubbles: true,
+			composed: true
 		});
 		this.dispatchEvent(event);
 	}
@@ -465,7 +521,9 @@ export class ColouringBook extends LitElement {
 		this.storeLocal()
 		this.refresh(this.ctx, this.img);
 		let event = new CustomEvent('remove-path', {
-			detail: { image: this.selectedImage }
+			detail: { image: this.selectedImage },
+			bubbles: true,
+			composed: true
 		});
 		this.dispatchEvent(event);
 		if (this.onThumbnails) { this.refresh(this.canvasThumbCtx, this.imageThumb, this.imageThumb.width / this.img.width) }
@@ -519,7 +577,9 @@ export class ColouringBook extends LitElement {
 				detail: {
 					image: this.selectedImage,
 					path
-				}
+				},
+				bubbles: true,
+				composed: true,
 			});
 			this.dispatchEvent(event);
 		}
@@ -634,7 +694,6 @@ export class ColouringBook extends LitElement {
 	}
 	
 	offsetToolsToRight() {
-		console.log(typeof(this.toolsRightOffset), typeof(Number('48')))
 		this.shadowRoot.querySelector('.tools').style.marginRight = this.toolsRightOffset+'px';
 	}
 

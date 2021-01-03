@@ -24,10 +24,13 @@ npm i colouring-book
 ### Events
 | Event Name | Target       | Detail             | Description
 | ---------- | ------------ | ------------------ | -----------
-| `image-selected`    | `colouring-book` | `image`           | Fired when a new `image` is selectd. 
+| `image-selected`    | `colouring-book` | `image`, `index`           | Fired when a new `image` is selectd. 
 | `add-path`   | `colouring-book` | `image`, `path`           | Fired when the a new coluring `path` is added to an `image`. 
 | `remove-path`   | `colouring-book` | `image`, `path`           | Fired when a `path` is removed from an `image`. 
 | `clear`   | `colouring-book` | `image`           | Fired when all `path`'s are removed from an `image`. 
+| `on-first-updated`   | `colouring-book` | `images`, `pathHistory`   | Custom event fired inside FirstUpdated() that passes all the images loaded and its changes. 
+| `print-worksheet`   | `colouring-book` | `isDownloading`, `link`           | Custom event fired onClick of print button.
+| `download-worksheet`   | `colouring-book` | `isDownloading`, `link`           | Custom event fired onClick of download button.
 
 
 ## Example
